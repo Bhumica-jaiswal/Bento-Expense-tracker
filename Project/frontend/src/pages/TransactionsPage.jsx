@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Edit, Trash2, ChevronLeft, ChevronRight, Plus, Download, Settings, Search, Filter, X, Calendar, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 import api from '../api/axios';
 import TransactionModal from '../components/TransactionModal';
 import TransactionDetailModal from '../components/TransactionDetailModal'
@@ -52,11 +52,19 @@ const TransactionsPage = () => {
     }
 
     try {
+      console.log('=== FRONTEND: Fetching data ===');
+      console.log('User token:', localStorage.getItem('token'));
+      
       const [summaryRes, expenseCategoriesRes, incomeCategoriesRes] = await Promise.all([
         api.get('/transactions/summary'),
         api.get('/transactions/categories/expense'),
         api.get('/transactions/categories/income')
       ]);
+      
+      console.log('Summary data:', summaryRes.data);
+      console.log('Expense categories:', expenseCategoriesRes.data);
+      console.log('Income categories:', incomeCategoriesRes.data);
+      
       setSummaryData(summaryRes.data);
       setExpenseCategories(expenseCategoriesRes.data);
       setIncomeCategories(incomeCategoriesRes.data);
@@ -81,13 +89,18 @@ const TransactionsPage = () => {
         params.append('endDate', dateTo);
       }
 
+      console.log('Fetching transactions with params:', params.toString());
       const transactionsRes = await api.get(`/transactions?${params.toString()}`);
+      console.log('Transactions response:', transactionsRes.data);
+      
       setTransactions(transactionsRes.data.transactions);
       setTotalPages(transactionsRes.data.totalPages);
       setSelectedTransactionIds([]); // Clear selection on data change
 
     } catch (error) {
       console.error("Failed to fetch transactions data", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
     } finally {
       setLoading(false);
       setIsFiltering(false);
@@ -163,12 +176,26 @@ const TransactionsPage = () => {
 
   const handleFormSubmit = async (formData, id) => {
     try {
-      if (id) await api.put(`/transactions/${id}`, formData);
-      else await api.post('/transactions', formData);
+      console.log('=== FRONTEND: Submitting transaction ===');
+      console.log('Form data:', formData);
+      console.log('Transaction ID:', id);
+      console.log('User token:', localStorage.getItem('token'));
+      
+      if (id) {
+        console.log('Updating existing transaction');
+        await api.put(`/transactions/${id}`, formData);
+      } else {
+        console.log('Creating new transaction');
+        const response = await api.post('/transactions', formData);
+        console.log('Transaction created successfully:', response.data);
+      }
       fetchData();
       handleCloseTransactionModal();
     } catch (error) {
       console.error("Failed to save transaction", error);
+      console.error("Error response:", error.response?.data);
+      console.error("Error status:", error.response?.status);
+      alert(`Failed to save transaction: ${error.response?.data?.message || error.message}`);
     }
   };
 
@@ -236,210 +263,400 @@ const TransactionsPage = () => {
   };
 
   return (
-    <>
-      <div className="flex flex-wrap gap-4 justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Transactions</h1>
-        <div className="flex flex-wrap gap-4">
-          {selectedTransactionIds.length > 0 && 
-            <button onClick={handleBulkDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-              Delete ({selectedTransactionIds.length})
-            </button>
-          }
-          <button onClick={() => setIsCategoryModalOpen(true)} className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
-            Manage Categories
-          </button>
-          <button onClick={() => handleOpenTransactionModal()} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-            <span className='text-2xl'>+</span> Add Transaction
-          </button>
-          <button
-            onClick={handleExportCSV}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-            title="Export all transactions to CSV"
-          >
-            Export to CSV
-          </button>
+    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+      {/* Dark Grid Background */}
+      <div className="absolute inset-0 bg-gray-900" style={{
+        backgroundImage: `
+          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '20px 20px'
+      }}></div>
+      
+      {/* Dynamic Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 right-20 w-32 h-32 border-2 border-lime-400 rounded-2xl transform rotate-12 animate-float opacity-60">
+          <div className="w-full h-full border-2 border-lime-400 rounded-xl m-2">
+            <div className="w-full h-full border-2 border-lime-400 rounded-lg m-2"></div>
+          </div>
+        </div>
+        <div className="absolute bottom-32 left-16 w-24 h-24 border-2 border-lime-400 rounded-2xl transform -rotate-12 animate-float-delayed opacity-40">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-lime-400 rounded"></div>
+            <div className="w-6 h-6 border-2 border-lime-400 rounded ml-1"></div>
+            <div className="w-4 h-4 border-2 border-lime-400 rounded ml-1"></div>
+          </div>
+        </div>
+        <div className="absolute top-1/2 left-1/4 w-20 h-20 border-2 border-lime-400 rounded-2xl transform rotate-45 animate-float-slow opacity-30">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-4 h-8 border-2 border-lime-400 rounded"></div>
+            <div className="w-4 h-6 border-2 border-lime-400 rounded ml-1"></div>
+            <div className="w-4 h-4 border-2 border-lime-400 rounded ml-1"></div>
+          </div>
         </div>
       </div>
-      {/* Search and Filters */}
-      <div className="mb-4 bg-white p-4 rounded-lg shadow">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-          <div className="lg:col-span-4">
-            <input
-              type="text"
-              placeholder="Search transactions..."
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+
+      {/* Header Section */}
+      <div className="relative z-10 p-8 mb-8 mx-4">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="space-y-4">
+            <h1 className="text-6xl font-black text-white mb-4">
+              💳 Transaction Manager
+            </h1>
+            <p className="text-white/80 text-xl font-medium max-w-2xl">
+              Track, manage, and analyze your financial transactions with precision and style ✨
+            </p>
           </div>
-          <div className="lg:col-span-2">
-            <select
-              value={typeFilter}
-              onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          <div className="flex flex-wrap gap-3">
+            {selectedTransactionIds.length > 0 && (
+              <button 
+                onClick={handleBulkDelete} 
+                className="group relative px-6 py-3 font-bold bg-red-500 text-white rounded-2xl shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-red-300 transform hover:scale-105 transition-all duration-300 flex items-center gap-2 overflow-hidden"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Trash2 className="text-xl relative z-10" />
+                <span className="relative z-10">Delete ({selectedTransactionIds.length})</span>
+              </button>
+            )}
+            <button 
+              onClick={() => setIsCategoryModalOpen(true)} 
+              className="group relative px-6 py-3 font-bold bg-gray-600/50 text-white rounded-2xl shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-gray-300 transform hover:scale-105 transition-all duration-300 flex items-center gap-2 overflow-hidden border border-gray-500/30 hover:border-gray-400/50"
             >
-              <option value="all">All Types</option>
-              <option value="income">Income</option>
-              <option value="expense">Expense</option>
-            </select>
-          </div>
-          <div className="lg:col-span-2">
-            <select
-              value={categoryFilter}
-              onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <Settings className="text-xl relative z-10" />
+              <span className="relative z-10">Categories</span>
+            </button>
+            <button 
+              onClick={() => handleOpenTransactionModal()} 
+              className="group relative px-6 py-3 font-bold bg-lime-400 text-gray-900 rounded-2xl shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-lime-300 transform hover:scale-105 transition-all duration-300 flex items-center gap-2 overflow-hidden"
             >
-              <option value="all">All Categories</option>
-              {allCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="lg:col-span-2 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500 pointer-events-none">From:</span>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-              className="w-full pl-14 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-          <div className="lg:col-span-2 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500 pointer-events-none">To:</span>
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-              className="w-full pl-10 pr-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+              <div className="absolute inset-0 bg-gradient-to-r from-lime-300/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <Plus className="text-xl relative z-10" />
+              <span className="relative z-10">Add Transaction</span>
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className="group relative px-6 py-3 font-bold bg-lime-400 text-gray-900 rounded-2xl shadow-xl hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-lime-300 transform hover:scale-105 transition-all duration-300 flex items-center gap-2 overflow-hidden"
+              title="Export all transactions to CSV"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-lime-300/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <Download className="text-xl relative z-10" />
+              <span className="relative z-10">Export CSV</span>
+            </button>
           </div>
         </div>
-        {hasActiveFilters && (
-          <div className="flex flex-wrap justify-between items-center gap-3 mt-3 pt-3 border-t border-gray-200">
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs font-medium text-gray-600">Active:</span>
-              {searchTerm && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">"{searchTerm}"</span>}
-              {typeFilter !== 'all' && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">{typeFilter === 'income' ? 'Income' : 'Expense'}</span>}
-              {categoryFilter !== 'all' && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">{categoryFilter}</span>}
-              {dateFrom && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">From: {new Date(dateFrom).toLocaleDateString()}</span>}
-              {dateTo && <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">To: {new Date(dateTo).toLocaleDateString()}</span>}
+      </div>
+      {/* Enhanced Search and Filters */}
+      <div className="relative z-10 mb-8 mx-4">
+        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
+              <Filter className="text-2xl text-white" />
             </div>
-            <button onClick={clearAllFilters} className="px-3 py-1 bg-red-500 text-white text-xs rounded-md hover:bg-red-600">
-              Clear Filters
-            </button>
+            <h2 className="text-2xl font-black text-white">Search & Filter</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+            <div className="lg:col-span-4">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="text"
+                  placeholder="Search transactions..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="w-full pl-12 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300 placeholder-gray-400"
+                />
+              </div>
+            </div>
+            <div className="lg:col-span-2">
+              <div className="relative">
+                <TrendingUp className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <select
+                  value={typeFilter}
+                  onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
+                  className="w-full pl-12 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300 appearance-none"
+                >
+                  <option value="all">All Types</option>
+                  <option value="income">Income</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+            </div>
+            <div className="lg:col-span-2">
+              <div className="relative">
+                <DollarSign className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
+                  className="w-full pl-12 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300 appearance-none"
+                >
+                  <option value="all">All Categories</option>
+                  {allCategories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="lg:col-span-2 relative">
+              <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <span className="absolute left-12 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500 pointer-events-none">From:</span>
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
+                  className="w-full pl-20 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300"
+                />
+            </div>
+            <div className="lg:col-span-2 relative">
+              <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <span className="absolute left-12 top-1/2 -translate-y-1/2 text-xs font-medium text-gray-500 pointer-events-none">To:</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
+                className="w-full pl-16 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300"
+              />
+            </div>
+          </div>
+          
+          {hasActiveFilters && (
+            <div className="flex flex-wrap justify-between items-center gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+              <div className="flex flex-wrap gap-2">
+                <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Active Filters:</span>
+                {searchTerm && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                    🔍 "{searchTerm}"
+                  </span>
+                )}
+                {typeFilter !== 'all' && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                    {typeFilter === 'income' ? '📈 Income' : '📉 Expense'}
+                  </span>
+                )}
+                {categoryFilter !== 'all' && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                    🏷️ {categoryFilter}
+                  </span>
+                )}
+                {dateFrom && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200">
+                    📅 From: {new Date(dateFrom).toLocaleDateString()}
+                  </span>
+                )}
+                {dateTo && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200">
+                    📅 To: {new Date(dateTo).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              <button 
+                onClick={clearAllFilters} 
+                className="group flex items-center gap-2 px-4 py-2 bg-red-500 text-white text-sm font-bold rounded-xl hover:bg-red-600 transition-all duration-300 transform hover:scale-105"
+              >
+                <X className="w-4 h-4" />
+                Clear All
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+      {/* Enhanced Transactions Display */}
+      <div className="relative z-10 mx-4">
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <Spinner />
+          </div>
+        ) : (
+          <div className={`transition-all duration-500 ${isFiltering ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+            {transactions.length > 0 ? (
+              <div className="space-y-4">
+                {/* Select All Header */}
+                <div className="bg-white dark:bg-gray-700 p-4 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-600 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="checkbox"
+                        className="w-5 h-5 rounded focus:ring-2 focus:ring-blue-600 hover:ring-4 hover:ring-blue-200 transition-all duration-200 cursor-pointer"
+                        checked={transactions.length > 0 && selectedTransactionIds.length === transactions.length}
+                        disabled={transactions.length === 0}
+                        onChange={() => setSelectedTransactionIds(selectedTransactionIds.length ? [] : transactions.map(t => t._id))}
+                      />
+                      <span className="text-lg font-bold text-gray-800 dark:text-white">
+                        {selectedTransactionIds.length > 0 ? `${selectedTransactionIds.length} selected` : 'Select all transactions'}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      {transactions.length} transaction{transactions.length !== 1 ? 's' : ''} found
+                    </div>
+                  </div>
+                </div>
+
+                {/* Transaction Cards */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {transactions.map((tx, index) => (
+                    <div 
+                      key={tx._id} 
+                      className="group relative bg-white dark:bg-gray-700 p-6 rounded-3xl shadow-xl hover:shadow-2xl border border-gray-200 dark:border-gray-600 transition-all duration-500 hover:scale-105 animate-fade-in-up"
+                      style={{animationDelay: `${0.3 + index * 0.1}s`}}
+                    >
+                      {/* Animated Background */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                      
+                      {/* Floating Elements */}
+                      <div className="absolute top-4 right-4 w-2 h-2 bg-gray-300 dark:bg-gray-500 rounded-full animate-bounce"></div>
+                      <div className="absolute bottom-4 left-4 w-1 h-1 bg-gray-200 dark:bg-gray-600 rounded-full animate-ping"></div>
+                      
+                      <div className="relative z-10">
+                        {/* Header with Checkbox and Type Indicator */}
+                        <div className="flex items-center justify-between mb-4">
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 rounded focus:ring-2 focus:ring-blue-600 hover:ring-4 hover:ring-blue-200 transition-all duration-200 cursor-pointer"
+                            checked={selectedTransactionIds.includes(tx._id)}
+                            onChange={() => toggleSelect(tx._id)}
+                          />
+                          <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-bold ${
+                            tx.isIncome 
+                              ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' 
+                              : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                          }`}>
+                            {tx.isIncome ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                            {tx.isIncome ? 'Income' : 'Expense'}
+                          </div>
+                        </div>
+
+                        {/* Transaction Name */}
+                        <h3 className="text-xl font-black text-gray-800 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                          {tx.name}
+                        </h3>
+
+                        {/* Amount */}
+                        <div className="mb-4">
+                          <p className={`text-3xl font-black ${tx.isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'} group-hover:scale-105 transition-transform duration-300`}>
+                            {tx.isIncome ? '+' : '-'}{new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: currency.code,
+                            }).format(tx.cost)}
+                          </p>
+                        </div>
+
+                        {/* Category and Date */}
+                        <div className="space-y-2 mb-6">
+                          <div className="flex items-center gap-2">
+                            <DollarSign className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Category:</span>
+                            <span className="text-sm font-bold text-gray-800 dark:text-white bg-gray-100 dark:bg-gray-600 px-2 py-1 rounded-lg">
+                              {tx.category}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Date:</span>
+                            <span className="text-sm font-bold text-gray-800 dark:text-white">
+                              {new Date(tx.addedOn).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center justify-between">
+                          <button
+                            onClick={() => handleOpenDetailsModal(tx)}
+                            className="group/btn flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 font-bold text-sm"
+                          >
+                            <span>Details</span>
+                          </button>
+                          
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleOpenTransactionModal(tx)}
+                              className="p-3 bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400 rounded-xl hover:bg-indigo-200 dark:hover:bg-indigo-800 transition-all duration-300 transform hover:scale-110"
+                              title="Edit transaction"
+                            >
+                              <Edit size={18} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTransaction(tx._id)}
+                              className="p-3 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-400 rounded-xl hover:bg-red-200 dark:hover:bg-red-800 transition-all duration-300 transform hover:scale-110"
+                              title="Delete transaction"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-gray-700 p-12 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-600 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                <EmptyState message="No transactions found. Start by adding your first transaction!" />
+              </div>
+            )}
           </div>
         )}
       </div>
-      {loading ? (
-        <Spinner />
-      ) : (
-        <div className={`bg-white shadow rounded-lg overflow-x-auto hover:shadow-lg transition-all duration-300 ${isFiltering ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-        {transactions.length > 0 ? (
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                 <th className="px-2 py-3">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded focus:ring-2 focus:ring-blue-600 hover:ring-4 hover:ring-blue-200 transition-all duration-200 cursor-pointer"
-                      checked={transactions.length > 0 && selectedTransactionIds.length === transactions.length}
-                      disabled={transactions.length === 0}
-                      onChange={() => setSelectedTransactionIds(selectedTransactionIds.length ? [] : transactions.map(t => t._id))}
-                    />
-                  </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Note</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {transactions.map((tx) => (
-                <tr key={tx._id} className="hover:shadow-[0_2px_4px_rgba(0,0,0,0.1)] transition-shadow duration-200">
-                  <td className="px-2 py-6 text-center">
-                      <input
-                        type="checkbox"
-                        className="w-4 h-4 rounded focus:ring-2 focus:ring-blue-600 hover:ring-4 hover:ring-blue-200 transition-all duration-200 cursor-pointer"
-                        checked={selectedTransactionIds.includes(tx._id)}
-                        onChange={() => toggleSelect(tx._id)}
-                      />
-                    </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{tx.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{tx.category}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap font-semibold ${tx.isIncome ? 'text-green-600' : 'text-red-600'}`}>
-                    {tx.isIncome ? '+' : '-'}{new Intl.NumberFormat('en-US', {
-                      style: 'currency',
-                      currency: currency.code,
-                    }).format(tx.cost)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{new Date(tx.addedOn).toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => handleOpenDetailsModal(tx)}
-                      className="text-blue-600 hover:text-blue-800 underline font-medium"
-                    >
-                      Details
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenTransactionModal(tx)}
-                          className="text-indigo-600 hover:text-indigo-900 p-2 rounded-full hover:bg-indigo-50 transition-all duration-200"
-                          title="Edit transaction"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteTransaction(tx._id)}
-                          className="text-red-600 hover:text-red-900 p-2 rounded-full hover:bg-red-50 transition-all duration-200"
-                          title="Delete transaction"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          ) : (
-          <div className="p-6">
-            <EmptyState message="No Transaction done" />
-          </div>
-                )}
-        </div>
-      )}
 
+      {/* Enhanced Pagination */}
       {!loading && totalPages > 1 && (
-        <div className="flex justify-between items-center mt-6">
-          <button 
-            onClick={() => setPage(p => Math.max(p - 1, 1))} 
-            disabled={page === 1} 
-            className="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            title="Previous page"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Page</span>
-            <span className="px-3 py-1 bg-blue-600 text-white rounded-lg font-medium">{page}</span>
-            <span className="text-sm text-gray-600">of {totalPages}</span>
+        <div className="relative z-10 mx-4 mt-8">
+          <div className="bg-white dark:bg-gray-700 p-6 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-600 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+            <div className="flex justify-between items-center">
+              <button 
+                onClick={() => setPage(p => Math.max(p - 1, 1))} 
+                disabled={page === 1} 
+                className="group flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                title="Previous page"
+              >
+                <ChevronLeft size={20} className="group-hover:translate-x-[-2px] transition-transform duration-300" />
+              </button>
+              
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 bg-gray-100 dark:bg-gray-600 px-6 py-3 rounded-2xl">
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Page</span>
+                  <span className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-black text-lg shadow-lg">
+                    {page}
+                  </span>
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">of {totalPages}</span>
+                </div>
+                
+                {/* Page Numbers */}
+                <div className="flex items-center gap-2">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageNum = Math.max(1, Math.min(totalPages - 4, page - 2)) + i;
+                    if (pageNum > totalPages) return null;
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setPage(pageNum)}
+                        className={`w-10 h-10 rounded-xl font-bold transition-all duration-300 transform hover:scale-110 ${
+                          pageNum === page
+                            ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                            : 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <button 
+                onClick={() => setPage(p => Math.min(p + 1, totalPages))} 
+                disabled={page === totalPages} 
+                className="group flex items-center justify-center w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                title="Next page"
+              >
+                <ChevronRight size={20} className="group-hover:translate-x-[2px] transition-transform duration-300" />
+              </button>
+            </div>
           </div>
-          
-          <button 
-            onClick={() => setPage(p => Math.min(p + 1, totalPages))} 
-            disabled={page === totalPages} 
-            className="flex items-center justify-center w-10 h-10 bg-white border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-            title="Next page"
-          >
-            <ChevronRight size={20} />
-          </button>
         </div>
       )}
 
@@ -467,7 +684,7 @@ const TransactionsPage = () => {
         transaction={viewingDetails}
         currency={currency}
       />
-    </>
+    </div>
   );
 };
 

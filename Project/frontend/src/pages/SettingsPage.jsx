@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { User, Shield, Trash2, AlertTriangle, Settings as SettingsIcon, Mail, Key } from 'lucide-react';
 import useAuth from '../hooks/useAuth';
 import api from '../api/axios';
 
@@ -28,27 +29,164 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Settings</h1>
+    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+      {/* Dark Grid Background */}
+      <div className="absolute inset-0 bg-gray-900" style={{
+        backgroundImage: `
+          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+        `,
+        backgroundSize: '20px 20px'
+      }}></div>
       
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">Account Info</h2>
-        <p className="mt-2 text-gray-800 dark:text-gray-200"><strong>Email:</strong> {user?.email}</p>
+      {/* Dynamic Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 right-20 w-32 h-32 border-2 border-lime-400 rounded-2xl transform rotate-12 animate-float opacity-60">
+          <div className="w-full h-full border-2 border-lime-400 rounded-xl m-2">
+            <div className="w-full h-full border-2 border-lime-400 rounded-lg m-2"></div>
+          </div>
+        </div>
+        <div className="absolute bottom-32 left-16 w-24 h-24 border-2 border-lime-400 rounded-2xl transform -rotate-12 animate-float-delayed opacity-40">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-lime-400 rounded"></div>
+            <div className="w-6 h-6 border-2 border-lime-400 rounded ml-1"></div>
+            <div className="w-4 h-4 border-2 border-lime-400 rounded ml-1"></div>
+          </div>
+        </div>
+        <div className="absolute top-1/2 left-1/4 w-20 h-20 border-2 border-lime-400 rounded-2xl transform rotate-45 animate-float-slow opacity-30">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-4 h-8 border-2 border-lime-400 rounded"></div>
+            <div className="w-4 h-6 border-2 border-lime-400 rounded ml-1"></div>
+            <div className="w-4 h-4 border-2 border-lime-400 rounded ml-1"></div>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-        <h2 className="text-lg font-semibold text-red-600 mb-2">Danger Zone</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-4">
-          Deleting your account is permanent. All your data will be lost.
-        </p>
-        {error && <p className="text-red-600 mb-2">{error}</p>}
-        <button
-          onClick={handleDeleteAccount}
-          disabled={loading}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-        >
-          {loading ? 'Deleting...' : 'Delete Account'}
-        </button>
+      {/* Header Section */}
+      <div className="relative z-10 p-8 mb-8 mx-4">
+        <div className="text-center">
+          <h1 className="text-6xl font-black text-white mb-4">
+            ⚙️ Settings & Preferences
+          </h1>
+          <p className="text-white/80 text-xl font-medium max-w-2xl mx-auto">
+            Manage your account settings and preferences with precision and control ✨
+          </p>
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto px-4 pb-8">
+        {/* Account Information Card */}
+        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 mb-8 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
+              <User className="text-2xl text-white" />
+            </div>
+            <h2 className="text-2xl font-black text-white">Account Information</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-700/50 p-6 rounded-2xl border border-lime-400/20">
+              <div className="flex items-center gap-3 mb-4">
+                <Mail className="w-6 h-6 text-lime-400" />
+                <span className="text-lg font-bold text-white">Email Address</span>
+              </div>
+              <p className="text-lime-400 font-bold text-xl">{user?.email}</p>
+              <p className="text-gray-400 text-sm mt-2">Your primary account email</p>
+            </div>
+            
+            <div className="bg-gray-700/50 p-6 rounded-2xl border border-lime-400/20">
+              <div className="flex items-center gap-3 mb-4">
+                <Key className="w-6 h-6 text-lime-400" />
+                <span className="text-lg font-bold text-white">Account Status</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-lime-400 rounded-full animate-pulse"></div>
+                <p className="text-lime-400 font-bold text-xl">Active</p>
+              </div>
+              <p className="text-gray-400 text-sm mt-2">Your account is in good standing</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Security Settings Card */}
+        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 mb-8 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
+              <Shield className="text-2xl text-white" />
+            </div>
+            <h2 className="text-2xl font-black text-white">Security & Privacy</h2>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="bg-gray-700/50 p-6 rounded-2xl border border-lime-400/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-2">Password Security</h3>
+                  <p className="text-gray-400">Manage your account password</p>
+                </div>
+                <button className="px-4 py-2 bg-lime-400 text-gray-900 rounded-xl font-bold hover:bg-lime-300 transition-all duration-300 transform hover:scale-105">
+                  Change Password
+                </button>
+              </div>
+            </div>
+            
+            <div className="bg-gray-700/50 p-6 rounded-2xl border border-lime-400/20">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white mb-2">Two-Factor Authentication</h3>
+                  <p className="text-gray-400">Add an extra layer of security</p>
+                </div>
+                <button className="px-4 py-2 bg-gray-600/50 text-white rounded-xl font-bold hover:bg-gray-600/70 transition-all duration-300 transform hover:scale-105 border border-gray-500/30">
+                  Enable 2FA
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Danger Zone Card */}
+        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-red-400/20 hover:border-red-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl flex items-center justify-center">
+              <AlertTriangle className="text-2xl text-white" />
+            </div>
+            <h2 className="text-2xl font-black text-white">Danger Zone</h2>
+          </div>
+          
+          <div className="bg-red-900/20 p-6 rounded-2xl border border-red-400/30">
+            <div className="flex items-center gap-3 mb-4">
+              <Trash2 className="w-6 h-6 text-red-400" />
+              <h3 className="text-lg font-bold text-white">Delete Account</h3>
+            </div>
+            <p className="text-gray-400 mb-6">
+              Once you delete your account, there is no going back. Please be certain. All your data, transactions, and settings will be permanently removed.
+            </p>
+            
+            {error && (
+              <div className="mb-4 p-4 bg-red-900/30 border border-red-400/50 rounded-xl">
+                <p className="text-red-400 font-medium">{error}</p>
+              </div>
+            )}
+            
+            <button
+              onClick={handleDeleteAccount}
+              disabled={loading}
+              className="px-6 py-3 bg-red-500 text-white rounded-xl font-bold hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Deleting Account...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-5 h-5" />
+                  Delete Account Permanently
+                </>
+              )}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -16,15 +16,17 @@ const validateRegistration = [
         return Promise.reject('This email domain is not allowed.');
       }
 
-      // Check for valid MX records
+      // Check for valid MX records (optional - skip if DNS fails)
       try {
         const addresses = await dns.promises.resolveMx(domain);
         if (!addresses || addresses.length === 0) {
-          return Promise.reject('Email domain does not exist or cannot receive mail.');
+          console.log(`Warning: No MX records found for ${domain}, but allowing registration`);
+          // Don't reject, just log a warning
         }
       } catch (error) {
-        // If DNS resolution fails
-        return Promise.reject('Email domain does not exist or cannot receive mail.');
+        // If DNS resolution fails, just log and continue
+        console.log(`DNS resolution failed for ${domain}, but allowing registration:`, error.message);
+        // Don't reject the registration
       }
     }),
 

@@ -11,7 +11,25 @@ require('./cron');
 const { sanitizeMiddleware } = require("./middleware/sanitizeMiddleware")
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: './.env' });
+
+// Set default values if not provided
+if (!process.env.MONGO_URI) {
+  console.error('MONGO_URI environment variable is required but not set!');
+  console.error('Please create a .env file with your MongoDB Atlas connection string.');
+  process.exit(1);
+}
+
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = 'bento_jwt_secret_key_2024_secure_12345';
+}
+
+if (!process.env.GEMINI_API_KEY) {
+  process.env.GEMINI_API_KEY = 'your_gemini_api_key_here';
+}
+
+console.log('Using MONGO_URI:', process.env.MONGO_URI);
+console.log('Using JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
 
 // Connect to database
 connectDB();
@@ -34,6 +52,12 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+
+// Add request logging (minimal)
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
 // sanitizeMiddleware
 app.use(sanitizeMiddleware());

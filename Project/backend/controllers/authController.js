@@ -15,6 +15,10 @@ const generateToken = (id) => {
 const signup = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log('=== SIGNUP DEBUG ===');
+  console.log('Email:', email);
+  console.log('Password length:', password ? password.length : 'undefined');
+
   if (!email || !password) {
     return res.status(400).json({ message: 'Please enter all fields' });
   }
@@ -23,13 +27,17 @@ const signup = async (req, res) => {
     const userExists = await User.findOne({ email });
 
     if (userExists) {
+      console.log('User already exists:', email);
       return res.status(400).json({ message: 'User already exists' });
     }
 
+    console.log('Creating new user...');
     const user = await User.create({
       email,
       password,
     });
+
+    console.log('User created successfully:', user._id);
 
     if (user) {
       res.status(201).json({
@@ -41,6 +49,7 @@ const signup = async (req, res) => {
       res.status(400).json({ message: 'Invalid user data' });
     }
   } catch (error) {
+    console.error('Signup error:', error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
@@ -51,21 +60,51 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ email });
+  console.log('=== LOGIN DEBUG ===');
+  console.log('Email:', email);
+  console.log('Password provided:', !!password);
+  console.log('Request body:', req.body);
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      res.json({
+  try {
+    console.log('Looking for user with email:', email);
+    const user = await User.findOne({ email });
+    console.log('User found:', !!user);
+    
+    if (user) {
+      console.log('User details:', {
         _id: user._id,
         email: user.email,
-        token: generateToken(user._id),
         isSetupComplete: user.isSetupComplete,
-        defaultCurrency: user.defaultCurrency,
+        defaultCurrency: user.defaultCurrency
       });
+      
+      console.log('Comparing password...');
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      console.log('Password match:', passwordMatch);
+      
+      if (passwordMatch) {
+        console.log('Generating token...');
+        const token = generateToken(user._id);
+        console.log('Token generated successfully');
+        
+        res.json({
+          _id: user._id,
+          email: user.email,
+          token: token,
+          isSetupComplete: user.isSetupComplete,
+          defaultCurrency: user.defaultCurrency,
+        });
+      } else {
+        console.log('Password does not match');
+        res.status(401).json({ message: 'Invalid email or password' });
+      }
     } else {
+      console.log('User not found');
       res.status(401).json({ message: 'Invalid email or password' });
     }
   } catch (error) {
+    console.error('Login error:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };

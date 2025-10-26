@@ -40,10 +40,9 @@ const uploadReceipt = async (req, res) => {
 
     const imagePart = fileToGenerativePart(req.file.path, req.file.mimetype);
 
-    const result = await client.models.generateContent({
-      model: "gemini-2.5-flash-lite",
-      contents: [{ role: "user", parts: [{ text: prompt }, imagePart] }],
-    });
+    const model = client.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    const result = await model.generateContent([prompt, imagePart]);
 
     const raw =
       result.candidates?.[0]?.content?.parts?.map((p) => p.text).join("\n\n") ??

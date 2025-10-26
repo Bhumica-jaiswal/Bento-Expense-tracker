@@ -11,6 +11,7 @@ const {
   getChartData,
   getExpenseCategories,
   getIncomeCategories,
+  getAllCategories,
   deleteCategory,
   exportTransactions
 } = require('../controllers/transactionController');
@@ -23,9 +24,10 @@ router.route('/')
 
 router.route('/summary').get(protect, getTransactionSummary);
 router.route('/charts').get(protect, getChartData);
+router.route('/categories').get(protect, getAllCategories);
 router.route('/categories/expense').get(protect, getExpenseCategories);
 router.route('/categories/income').get(protect,getIncomeCategories);
-router.route('/category').delete(protect, deleteCategory); 
+router.route('/category').delete(protect, deleteCategory);
 router.route('/export').get(protect, exportTransactions);
 router.route('/bulk').delete(protect, bulkDeleteTransactions);
 

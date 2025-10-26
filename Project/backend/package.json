@@ -8,10 +8,12 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon",
+    "dev:debug": "nodemon --inspect",
     "seed": "node seeder/seeder.js",
     "destroy": "node seeder/seeder.js -d",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@google/genai": "^1.26.0",

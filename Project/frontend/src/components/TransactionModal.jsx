@@ -120,54 +120,143 @@ const TransactionModal = ({ isOpen, onClose, onSubmit, transaction, expenseCateg
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-4">{transaction ? 'Edit' : 'Add'}{modalView === VIEW_MODE.EXPENSE_FORM ? ' Expense' : ' Income'} </h2>
+    <div className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm flex justify-center items-center z-50" style={{
+      backgroundImage: `
+        linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+      `,
+      backgroundSize: '20px 20px'
+    }}>
+      {/* Floating Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 right-20 w-16 h-16 border-2 border-lime-400 rounded-2xl transform rotate-12 animate-float opacity-40">
+          <div className="w-full h-full border-2 border-lime-400 rounded-xl m-1">
+            <div className="w-full h-full border-2 border-lime-400 rounded-lg m-1"></div>
+          </div>
+        </div>
+        <div className="absolute bottom-20 left-20 w-12 h-12 border-2 border-lime-400 rounded-2xl transform -rotate-12 animate-float-delayed opacity-30">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-4 h-4 border-2 border-lime-400 rounded"></div>
+            <div className="w-3 h-3 border-2 border-lime-400 rounded ml-1"></div>
+            <div className="w-2 h-2 border-2 border-lime-400 rounded ml-1"></div>
+          </div>
+        </div>
+        <div className="absolute top-1/2 left-1/4 w-10 h-10 border-2 border-lime-400 rounded-2xl transform rotate-45 animate-float-slow opacity-20">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-2 h-4 border-2 border-lime-400 rounded"></div>
+            <div className="w-2 h-3 border-2 border-lime-400 rounded ml-1"></div>
+            <div className="w-2 h-2 border-2 border-lime-400 rounded ml-1"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="relative bg-gray-800/90 backdrop-blur-sm p-6 rounded-2xl shadow-2xl w-full max-w-md border-2 border-lime-400/30 hover:border-lime-400/50 transition-all duration-500 overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-lime-400/5 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500"></div>
+        
+        {/* Floating Elements */}
+        <div className="absolute top-4 right-4 w-2 h-2 bg-lime-400/60 rounded-full animate-bounce"></div>
+        <div className="absolute top-4 left-4 w-1 h-1 bg-lime-400/40 rounded-full animate-ping"></div>
+        <div className="absolute bottom-4 right-4 w-1 h-1 bg-lime-400/30 rounded-full animate-pulse"></div>
+        
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black mb-4 text-white text-center relative">
+            {modalView === VIEW_MODE.EXPENSE_FORM ? (
+              <>
+                <span className="text-lime-400">💸</span> {transaction ? 'Edit' : 'Add'} Expense
+              </>
+            ) : (
+              <>
+                <span className="text-lime-400">💰</span> {transaction ? 'Edit' : 'Add'} Income
+              </>
+            )}
+          </h2>
         <form onSubmit={handleSubmit}>
           {/* ... other form fields (name, cost, etc.) remain the same ... */}
           {modalView === VIEW_MODE.EXPENSE_FORM && (
             <>
               <div className="mb-4">
-                <label className="block text-gray-700">Name</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full px-3 py-2 border rounded" required />
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">📝</span> Description
+                </label>
+                <input 
+                  type="text" 
+                  name="name" 
+                  value={formData.name} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 placeholder-gray-400 text-sm" 
+                  placeholder="What did you spend on?"
+                  required 
+                />
               </div>
               <div className="mb-4">
-                <label className="block text-gray-700">Category</label>
-                <select name="category" value={formData.category} onChange={handleChange} className="w-full px-3 py-2 border rounded" required>
-                  <option value="" disabled>Select a category</option>
-                  {expenseCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                  <option value="__add_new__" className="font-bold text-blue-600">-- Add New Category --</option>
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">🏷️</span> Category
+                </label>
+                <select 
+                  name="category" 
+                  value={formData.category} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 text-sm" 
+                  required
+                >
+                  <option value="" disabled className="text-gray-400">Select a category</option>
+                  {expenseCategories.map(cat => <option key={cat} value={cat} className="bg-gray-700">{cat}</option>)}
+                  <option value="__add_new__" className="font-bold text-lime-400 bg-gray-700">-- Add New Category --</option>
                 </select>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700">Amount (Expense)</label>
-                <input type="number" name="cost" value={formData.cost} onChange={handleChange} className="w-full px-3 py-2 border rounded" required />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700">Date</label>
-                <input type="date" name="addedOn" value={formData.addedOn} onChange={handleChange} className="w-full px-3 py-2 border rounded" required />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700">Notes (Optional)</label>
-                <textarea
-                  name="note"
-                  value={formData.note}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded resize-y"
-                  rows="3"
-                  placeholder="E.g., Dinner at favorite restaurant, January salary"
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">💸</span> Amount (Expense)
+                </label>
+                <input 
+                  type="number" 
+                  name="cost" 
+                  value={formData.cost} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 placeholder-gray-400 text-sm" 
+                  placeholder="0.00"
+                  required 
                 />
               </div>
 
               <div className="mb-4">
-                <label className="flex items-center">
-                  <a className="text-blue-600 underline" href="#" onClick={handleSwitchToIncome}>
-                    Add Income
-                  </a>
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">📅</span> Date
                 </label>
+                <input 
+                  type="date" 
+                  name="addedOn" 
+                  value={formData.addedOn} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 text-sm" 
+                  required 
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">📄</span> Notes (Optional)
+                </label>
+                <textarea
+                  name="note"
+                  value={formData.note}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 resize-y placeholder-gray-400 text-sm"
+                  rows="2"
+                  placeholder="E.g., Dinner at favorite restaurant, Monthly bills..."
+                />
+              </div>
+
+              <div className="mb-4 text-center">
+                <button 
+                  type="button"
+                  className="text-lime-400 hover:text-lime-300 font-bold text-sm underline transition-colors duration-300"
+                  onClick={handleSwitchToIncome}
+                >
+                  💰 Switch to Add Income
+                </button>
               </div>
             </>
           )}
@@ -175,55 +264,93 @@ const TransactionModal = ({ isOpen, onClose, onSubmit, transaction, expenseCateg
           {modalView === VIEW_MODE.INCOME_FORM && (
             <>
               <div className="mb-4">
-                <label className="block text-gray-700">Category</label>
-                <select name="category" value={formData.category} onChange={handleChange} className="w-full px-3 py-2 border rounded" required>
-                  <option value="" disabled>Select a category</option>
-                  {incomeCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                  <option value="__add_new__" className="font-bold text-blue-600">-- Add New Category --</option>
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">🏷️</span> Category
+                </label>
+                <select 
+                  name="category" 
+                  value={formData.category} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 text-sm" 
+                  required
+                >
+                  <option value="" disabled className="text-gray-400">Select a category</option>
+                  {incomeCategories.map(cat => <option key={cat} value={cat} className="bg-gray-700">{cat}</option>)}
+                  <option value="__add_new__" className="font-bold text-lime-400 bg-gray-700">-- Add New Category --</option>
                 </select>
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700">Amount (Income)</label>
-                <input type="number" name="cost" value={formData.cost} onChange={handleChange} className="w-full px-3 py-2 border rounded" required />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700">Date</label>
-                <input type="date" name="addedOn" value={formData.addedOn} onChange={handleChange} className="w-full px-3 py-2 border rounded" required />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700">Notes (Optional)</label>
-                <textarea
-                  name="note"
-                  value={formData.note}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded resize-y"
-                  rows="3"
-                  placeholder="E.g., Dinner at favorite restaurant, January salary"
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">💰</span> Amount (Income)
+                </label>
+                <input 
+                  type="number" 
+                  name="cost" 
+                  value={formData.cost} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 placeholder-gray-400 text-sm" 
+                  placeholder="0.00"
+                  required 
                 />
               </div>
 
               <div className="mb-4">
-                <label className="flex items-center">
-                  <a className="text-blue-600 underline" href="#" onClick={handleSwitchToExpense}>
-                    Add Expense
-                  </a>
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">📅</span> Date
                 </label>
+                <input 
+                  type="date" 
+                  name="addedOn" 
+                  value={formData.addedOn} 
+                  onChange={handleChange} 
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 text-sm" 
+                  required 
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-white mb-2">
+                  <span className="text-lime-400">📄</span> Notes (Optional)
+                </label>
+                <textarea
+                  name="note"
+                  value={formData.note}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border-2 border-lime-400/30 rounded-xl focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 bg-gray-700/50 text-white font-medium transition-all duration-300 resize-y placeholder-gray-400 text-sm"
+                  rows="2"
+                  placeholder="E.g., Salary, Freelance work, Investment returns..."
+                />
+              </div>
+
+              <div className="mb-4 text-center">
+                <button 
+                  type="button"
+                  className="text-lime-400 hover:text-lime-300 font-bold text-sm underline transition-colors duration-300"
+                  onClick={handleSwitchToExpense}
+                >
+                  💸 Switch to Add Expense
+                </button>
               </div>
             </>
           )}
-          <div className="flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+          <div className="flex justify-end space-x-3 mt-6">
+            <button 
+              type="button" 
+              onClick={onClose} 
+              className="px-4 py-2 bg-gray-600/50 text-white rounded-xl hover:bg-gray-600/70 font-bold transition-all duration-300 transform hover:scale-105 border border-gray-500/30 hover:border-gray-400/50 text-sm"
+            >
+              ❌ Cancel
+            </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="px-4 py-2 bg-lime-400 text-gray-900 rounded-xl font-bold transition-all duration-300 transform hover:scale-105 hover:bg-lime-300 focus:ring-2 focus:ring-lime-400/20 shadow-lg hover:shadow-xl text-sm"
             >
-              Save
+              {modalView === VIEW_MODE.EXPENSE_FORM ? '💸 Save Expense' : '💰 Save Income'}
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

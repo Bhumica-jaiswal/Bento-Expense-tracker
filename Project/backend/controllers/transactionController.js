@@ -7,6 +7,11 @@ const addTransaction = async (req, res) => {
   const { name, category, cost, addedOn, isIncome, note } = req.body;
 
   try {
+    console.log('=== ADD TRANSACTION DEBUG ===');
+    console.log('User ID:', req.user?.id);
+    console.log('User _id:', req.user?._id);
+    console.log('Request body:', req.body);
+
     const transaction = new IncomeExpense({
       user: req.user.id,
       name,
@@ -17,9 +22,13 @@ const addTransaction = async (req, res) => {
       note
     });
 
+    console.log('Transaction object before save:', transaction);
     const createdTransaction = await transaction.save();
+    console.log('Transaction saved successfully:', createdTransaction);
+    
     res.status(201).json(createdTransaction);
   } catch (error) {
+    console.error('Error saving transaction:', error);
     res.status(500).json({ message: 'Server Error', error: error.message });
   }
 };
@@ -301,6 +310,27 @@ const getIncomeCategories = async (req, res) => {
   }
 };
 
+// @desc    Get all unique categories (both expense and income)
+// @route   GET /api/transactions/categories
+// @access  Private
+const getAllCategories = async (req, res) => {
+  try {
+    // Get both expense and income categories
+    const [expenseCategories, incomeCategories] = await Promise.all([
+      IncomeExpense.distinct('category', { user: req.user._id, isIncome: false }),
+      IncomeExpense.distinct('category', { user: req.user._id, isIncome: true })
+    ]);
+
+    // Combine and deduplicate
+    const allCategories = [...new Set([...expenseCategories, ...incomeCategories])];
+    allCategories.sort();
+
+    res.json(allCategories);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
 // @desc    Delete a user-defined category
 // @route   DELETE /api/transactions/category
 // @access  Private
@@ -360,6 +390,7 @@ module.exports = {
   getChartData,
   getExpenseCategories,
   getIncomeCategories,
+  getAllCategories,
   deleteCategory,
   exportTransactions,
 };

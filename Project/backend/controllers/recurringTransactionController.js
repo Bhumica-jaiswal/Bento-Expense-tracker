@@ -5,12 +5,15 @@ const createRecurringTransaction = async (req, res) => {
     const { name, category, amount, isIncome, frequency, startDate } = req.body;
 
     try {
+        console.log('=== CREATE RECURRING TRANSACTION DEBUG ===');
+        console.log('User ID:', req.user.id);
+        console.log('Request body:', req.body);
+        
         if (!name || !category || !amount || !frequency || !startDate) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
 
         const nextDueDate = calculateNextDueDate(startDate, frequency);
-
 
         const recurringTransaction = new RecurringTransaction({
             user: req.user.id,
@@ -23,7 +26,19 @@ const createRecurringTransaction = async (req, res) => {
             nextDueDate,
         });
 
+        console.log('Creating recurring transaction with data:', {
+            user: req.user.id,
+            name,
+            category,
+            amount,
+            isIncome,
+            frequency,
+            startDate,
+            nextDueDate,
+        });
+
         const createdRecurringTransaction = await recurringTransaction.save();
+        console.log('Created recurring transaction:', createdRecurringTransaction);
         res.status(201).json(createdRecurringTransaction);
     } catch (err) {
         console.error('Error creating recurring transaction:', err.message);
@@ -34,7 +49,14 @@ const createRecurringTransaction = async (req, res) => {
 
 const getRecurringTransactions = async (req, res) => {
     try {
+        console.log('=== GET RECURRING TRANSACTIONS DEBUG ===');
+        console.log('User ID:', req.user.id);
+        console.log('User object:', req.user);
+        
         const transactions = await RecurringTransaction.find({ user: req.user.id });
+        console.log('Found transactions:', transactions.length);
+        console.log('Transactions:', transactions);
+        
         res.json(transactions);
     } catch (err) {
         console.error('Error fetching recurring transactions:', err.message);

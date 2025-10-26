@@ -10,11 +10,11 @@ const Layout = () => {
 
 
   const getNavLinkClass = ({ isActive }) => {
-    const baseClasses = 'px-3 py-2 rounded-md text-sm font-medium';
+    const baseClasses = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 transform hover:scale-105';
     if (isActive) {
-      return `${baseClasses} bg-blue-600 text-white`;
+      return `${baseClasses} bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg shadow-teal-500/25`;
     }
-    return `${baseClasses} text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-black dark:hover:text-white`;
+    return `${baseClasses} text-gray-600 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20 hover:text-teal-600 dark:hover:text-teal-400`;
   };
 
   const handleClick = (e) => {
@@ -24,18 +24,23 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-md">
+      <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-teal-200 dark:border-teal-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              {/* 2. Wrap the span in a Link to the dashboard */}
-               <span
-      onClick={handleClick}
-      className="font-bold text-xl text-blue-600 dark:text-blue-400 cursor-pointer transition-all duration-500 hover:scale-105 hover:drop-shadow-lg hover:text-blue-500 dark:hover:text-blue-300"
-      title="Go to home"
-    >
-      Bento
-    </span>
+              {/* Enhanced Bento Logo */}
+              <div
+                onClick={handleClick}
+                className="group cursor-pointer transition-all duration-500 hover:scale-110"
+                title="Go to home"
+              >
+                <div className="relative">
+                  <span className="font-black text-3xl bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 bg-clip-text text-transparent drop-shadow-lg">
+                    Bento
+                  </span>
+                  <div className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
+                </div>
+              </div>
 
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
@@ -68,7 +73,7 @@ const Layout = () => {
               <CurrencySelector />
               <button
                 onClick={logout}
-                className="bg-red-500 text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-red-600"
+                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
               >
                 Logout
               </button>
@@ -78,7 +83,7 @@ const Layout = () => {
       </nav>
 
       <main>
-        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div className="w-full">
           <Outlet />
         </div>
       </main>
