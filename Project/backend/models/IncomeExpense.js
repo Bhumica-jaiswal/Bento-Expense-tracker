@@ -19,7 +19,14 @@ const incomeExpenseSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'Please add a cost or income amount'],
   },
+  amount: {
+    type: Number,
+  },
   addedOn: {
+    type: Date,
+    default: Date.now,
+  },
+  date: {
     type: Date,
     default: Date.now,
   },
@@ -32,10 +39,22 @@ const incomeExpenseSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  description: {
+    type: String,
+    default: ''
+  },
   isDeleted: {
     type: Boolean,
     required: true,
     default: false,
+  },
+  isRecurring: {
+    type: Boolean,
+    default: false,
+  },
+  recurringTransactionId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'RecurringTransaction',
   },
 }, {
   timestamps: true,

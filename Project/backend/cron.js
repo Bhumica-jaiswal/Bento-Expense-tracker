@@ -1,42 +1,37 @@
 const cron = require('node-cron');
-const RecurringTransactions = require('./models/RecurringTransactions');
-const IncomeExpense = require('./models/IncomeExpense');
-const { calculateNextDueDate } = require('./utils');
+const { generateDueTransactions } = require('./controllers/recurringTransactionController');
 
+// Run daily at midnight to check for due recurring transactions
 cron.schedule('0 0 * * *', async () => {
-    console.log('=== Running Recurring Transactions Cron ===');
+    console.log('=== Running Daily Recurring Transactions Cron ===');
+    await generateDueTransactions();
+});
 
+// Run every hour to check for upcoming payments (for reminders)
+cron.schedule('0 * * * *', async () => {
+    console.log('=== Running Hourly Upcoming Payments Check ===');
+    // This could be used for sending reminders
+    // For now, we'll just log upcoming payments
     try {
-        const now = new Date();
-
-        const dueRecurringTransactions = await RecurringTransactions.find({
-            nextDueDate: { $lte: now },
+        const RecurringTransaction = require('./models/RecurringTransactions');
+        const { isReminderDue } = require('./utils');
+        
+        const upcomingTransactions = await RecurringTransaction.find({
+            isActive: true,
+            reminderSent: false
         });
 
-        console.log(`Found ${dueRecurringTransactions.length} recurring transactions due`);
-
-        for (const item of dueRecurringTransactions) {
-            try {
-                const transaction = await IncomeExpense.create({
-                    user: item.user,
-                    name: item.name,
-                    category: item.category,
-                    cost: item.amount,
-                    isIncome: item.isIncome,
-                    date: item.nextDueDate,
+        for (const transaction of upcomingTransactions) {
+            if (isReminderDue(transaction.nextDueDate, 1)) {
+                console.log(`REMINDER: ${transaction.name} is due tomorrow (${transaction.nextDueDate})`);
+                // Here you could send email notifications, push notifications, etc.
+                // For now, we'll just mark as reminder sent
+                await RecurringTransaction.findByIdAndUpdate(transaction._id, {
+                    reminderSent: true
                 });
-
-                console.log(`Created transaction: ${transaction.name}, amount: ${transaction.amount}`);
-
-                item.nextDueDate = calculateNextDueDate(item.startDate, item.frequency, item.nextDueDate);
-                await item.save();
-
-                console.log(`Updated nextDueDate for ${item.name} to ${item.nextDueDate}`);
-            } catch (err) {
-                console.error(`Failed to create transaction for ${item.name}:`, err.message);
             }
         }
     } catch (err) {
-        console.error('Cron job failed:', err.message);
+        console.error('Error in reminder cron job:', err.message);
     }
 });

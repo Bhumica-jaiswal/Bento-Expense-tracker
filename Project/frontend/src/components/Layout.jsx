@@ -3,6 +3,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom'; // 1. Import Li
 import useAuth from '../hooks/useAuth';
 import CurrencySelector from './CurrencySelector';
 import ThemeToggle from './ThemeToggle';
+import NotificationBell from './NotificationBell';
 
 const Layout = () => {
   const { logout } = useAuth();
@@ -69,6 +70,7 @@ const Layout = () => {
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <NotificationBell />
               <ThemeToggle />
               <CurrencySelector />
               <button

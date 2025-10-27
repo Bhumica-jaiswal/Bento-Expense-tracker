@@ -16,6 +16,8 @@ const RecurringTransactionModal = ({
     isIncome: false,
     frequency: 'monthly',
     startDate: '',
+    endDate: '',
+    description: '',
   });
 
   useEffect(() => {
@@ -27,6 +29,8 @@ const RecurringTransactionModal = ({
         isIncome: transaction.isIncome,
         frequency: transaction.frequency,
         startDate: transaction.startDate?.slice(0, 10),
+        endDate: transaction.endDate?.slice(0, 10) || '',
+        description: transaction.description || '',
       });
     } else {
       setForm({
@@ -36,6 +40,8 @@ const RecurringTransactionModal = ({
         isIncome: false,
         frequency: 'monthly',
         startDate: '',
+        endDate: '',
+        description: '',
       });
     }
   }, [transaction]);
@@ -175,7 +181,7 @@ const RecurringTransactionModal = ({
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
-                <option value="annually">Annually</option>
+                <option value="yearly">Yearly</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,6 +211,39 @@ const RecurringTransactionModal = ({
               <FiCalendar className="h-3 w-3" />
               Next Due Date will be calculated automatically based on this start date and frequency.
             </p>
+          </div>
+
+          {/* End Date (Optional) */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">End Date (Optional)</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <FiCalendar className="h-4 w-4 text-lime-500" />
+              </div>
+              <input
+                type="date"
+                value={form.endDate}
+                onChange={handleChange}
+                name="endDate"
+                className="w-full pl-10 pr-3 py-3 border-2 border-gray-200 rounded-lg bg-white/50 backdrop-blur-sm text-gray-800 focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 transition-all duration-300"
+              />
+            </div>
+            <p className="text-xs text-gray-500 mt-1">
+              Leave empty for recurring transactions with no end date.
+            </p>
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Description (Optional)</label>
+            <textarea
+              placeholder="Enter description or notes..."
+              value={form.description}
+              onChange={handleChange}
+              name="description"
+              rows={3}
+              className="w-full px-3 py-3 border-2 border-gray-200 rounded-lg bg-white/50 backdrop-blur-sm text-gray-800 placeholder-gray-500 focus:outline-none focus:border-lime-400 focus:ring-2 focus:ring-lime-400/20 transition-all duration-300 resize-none"
+            />
           </div>
 
           {/* Income/Expense Toggle */}

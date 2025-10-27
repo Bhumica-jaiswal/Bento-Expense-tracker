@@ -17,24 +17,24 @@ const {
 } = require('../controllers/transactionController');
 
 const { protect } = require('../middleware/authMiddleware');
-// Route for getting all and adding a new transaction
+const { sanitizeMiddleware } = require('../middleware/sanitizeMiddleware');
+
+// Apply sanitize only to routes where user submits data
 router.route('/')
   .get(protect, getTransactions)
-  .post(protect, addTransaction);
+  .post(protect, sanitizeMiddleware(), addTransaction);
 
 router.route('/summary').get(protect, getTransactionSummary);
 router.route('/charts').get(protect, getChartData);
 router.route('/categories').get(protect, getAllCategories);
 router.route('/categories/expense').get(protect, getExpenseCategories);
-router.route('/categories/income').get(protect,getIncomeCategories);
+router.route('/categories/income').get(protect, getIncomeCategories);
 router.route('/category').delete(protect, deleteCategory);
 router.route('/export').get(protect, exportTransactions);
 router.route('/bulk').delete(protect, bulkDeleteTransactions);
 
-
-// Route for updating and deleting a specific transaction
 router.route('/:id')
-  .put(protect, updateTransaction)
+  .put(protect, sanitizeMiddleware(), updateTransaction)
   .delete(protect, deleteTransaction);
 
 module.exports = router;

@@ -8,7 +8,6 @@ import { FiPlus, FiDollarSign, FiTrendingUp, FiCalendar } from "react-icons/fi";
 
 const Budgets = () => {
   const [budgets, setBudgets] = useState([]);
-  const [transactions, setTransactions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const { currency } = useCurrency();
@@ -18,14 +17,14 @@ const Budgets = () => {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const [budgetsRes, categoriesRes, transactionsRes] = await Promise.all([
+      const [budgetsRes, categoriesRes] = await Promise.all([
         api.get('/budgets'),
         api.get('/transactions/categories/expense'),
-        api.get('/transactions'),
       ]);
+      console.log('Budget API Response:', budgetsRes.data);
       setBudgets(budgetsRes.data);
       setCategories(categoriesRes.data);
-      setTransactions(transactionsRes.data.transactions || []);
+      // No need to fetch transactions separately - budget API now includes spent amounts
     } catch (error) {
       console.error('Failed to fetch budgets or transactions', error);
     } finally {
@@ -69,18 +68,7 @@ const Budgets = () => {
     }
   };
 
-  const calculateSpent = (budget) => {
-    return transactions
-      .filter((tx) => {
-        const txDate = new Date(tx.addedOn);
-        return (
-          tx.category === budget.category &&
-          txDate.getMonth() + 1 === budget.month &&
-          txDate.getFullYear() === budget.year
-        );
-      })
-      .reduce((sum, tx) => sum + tx.cost, 0);
-  };
+  // No need for manual calculation - backend now provides spent amounts
 
   return (
     <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
@@ -184,9 +172,18 @@ const Budgets = () => {
                   </thead>
                   <tbody className="divide-y divide-lime-400/10">
                     {budgets.map((b) => {
-                      const spent = calculateSpent(b);
-                      const remaining = b.amount - spent;
-                      const percent = Math.min((spent / b.amount) * 100, 100).toFixed(1);
+                      // Use data from backend API
+                      const spent = b.spent || 0;
+                      const remaining = b.remaining || (b.amount - spent);
+                      const percent = b.percentageUsed || Math.min((spent / b.amount) * 100, 100).toFixed(1);
+                      
+                      console.log(`Budget ${b.category}:`, {
+                        amount: b.amount,
+                        spent: spent,
+                        remaining: remaining,
+                        percent: percent,
+                        alertStatus: b.alertStatus
+                      });
 
                       return (
                         <tr key={b._id} className="hover:bg-lime-400/5 transition-all duration-300">
@@ -217,19 +214,23 @@ const Budgets = () => {
                             }).format(remaining)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap w-1/3">
-                            <div className="w-full bg-lime-400/20 rounded-full h-3">
-                              <div
-                                className={`h-3 rounded-full ${
-                                  percent < 80
-                                    ? 'bg-lime-400'
-                                    : percent < 100
-                                    ? 'bg-yellow-400'
-                                    : 'bg-red-400'
-                                }`}
-                                style={{ width: `${percent}%` }}
-                              ></div>
+                            <div className="flex items-center">
+                              <div className="w-full bg-gray-700 rounded-full h-2 mr-3">
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-300 ${
+                                    b.alertStatus === 'exceeded' ? 'bg-red-500' :
+                                    b.alertStatus === 'warning' ? 'bg-yellow-500' : 'bg-lime-500'
+                                  }`}
+                                  style={{ width: `${Math.min(percent, 100)}%` }}
+                                ></div>
+                              </div>
+                              <span className={`text-sm font-semibold ${
+                                b.alertStatus === 'exceeded' ? 'text-red-400' :
+                                b.alertStatus === 'warning' ? 'text-yellow-400' : 'text-lime-400'
+                              }`}>
+                                {percent}%
+                              </span>
                             </div>
-                            <span className="text-xs text-lime-400/80 font-semibold">{percent}%</span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button

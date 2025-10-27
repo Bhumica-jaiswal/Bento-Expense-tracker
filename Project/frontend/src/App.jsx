@@ -15,10 +15,13 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import SetupProtectedRoute from './components/SetupProtectedRoute';
 import RecurringTransactions from './pages/RecurringTransactions';
+import BudgetAlertToast from './components/BudgetAlertToast';
+import UpcomingPaymentsNotification from './components/UpcomingPaymentsNotification';
+import ErrorBoundary from './components/ErrorBoundary';
 
 function App() {
   return (
-    <>
+    <ErrorBoundary>
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<WelcomePage />} />
@@ -54,7 +57,9 @@ function App() {
         </Route>
       </Routes>
       <ToastContainer />
-    </>
+      <BudgetAlertToast />
+      <UpcomingPaymentsNotification />
+    </ErrorBoundary>
   );
 }
 
