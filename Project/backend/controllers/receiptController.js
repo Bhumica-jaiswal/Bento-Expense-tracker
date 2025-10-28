@@ -1,14 +1,14 @@
 const Receipt = require("../models/Receipt");
 const IncomeExpense = require("../models/IncomeExpense");
-const { GoogleGenAI } = require("@google/genai");
-
 const fs = require("fs");
+const Tesseract = require("tesseract.js");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const client = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+// ✅ Initialize Gemini client
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+console.log("Gemini API key set:", !!process.env.GEMINI_API_KEY);
 
-// Helper function to convert a file to a format Gemini can understand
+// ✅ Helper function: convert uploaded file to inlineData format
 function fileToGenerativePart(path, mimeType) {
   return {
     inlineData: {
@@ -27,50 +27,159 @@ const uploadReceipt = async (req, res) => {
   }
 
   try {
-    console.log('=== RECEIPT UPLOAD DEBUG ===');
-    console.log('File received:', req.file);
-    console.log('Gemini API Key set:', !!process.env.GEMINI_API_KEY);
-    
-    const prompt = `
-      Analyze this receipt image. Extract the following details:
-      - merchant: The name of the store or merchant.
-      - amount: The final total amount paid, as a number.
-      - date: The date of the transaction in YYYY-MM-DD format.
-      - category: Suggest a likely category from this list: Groceries, Food, Shopping, Bills, Transportation, Entertainment.
+    console.log("=== RECEIPT UPLOAD DEBUG ===");
+    console.log("File received:", req.file);
 
-      Return the result as a single, minified JSON object. For example:
-      {"merchant":"Walmart","amount":42.97,"date":"2025-09-13","category":"Groceries"}
-    `;
+    let extractedData = {};
 
-    const imagePart = fileToGenerativePart(req.file.path, req.file.mimetype);
-    console.log('Image part created:', !!imagePart);
-
-    const model = client.getGenerativeModel({ model: "gemini-1.5-flash" });
-    console.log('Model initialized');
-    
-    const result = await model.generateContent([prompt, imagePart]);
-    console.log('Gemini API response received');
-
-    const raw = result.response?.text() ?? "";
-    console.log('Raw Gemini response:', raw);
-
-    const cleanedText = raw
-      .replace(/^[\s`]*```json[\s`]*/i, "") // Remove opening ```json with spaces
-      .replace(/[\s`]*```$/i, "") // Remove closing ```
-      .trim();
-    
-    console.log('Cleaned text:', cleanedText);
-
-    let extractedData;
+    // --- GEMINI EXTRACTION ---
     try {
-      extractedData = JSON.parse(cleanedText);
-      console.log('Parsed data:', extractedData);
-    } catch (e) {
-      console.warn("[Gemini] Invalid JSON, fallback to defaults.", e);
-      console.warn("Raw text that failed to parse:", cleanedText);
-      extractedData = {};
+      const prompt = `
+        Analyze this receipt image and extract:
+        - merchant: name of store
+        - amount: total amount paid
+        - currency: ISO code of currency, e.g. "INR", "USD", "EUR"
+        - date: transaction date (YYYY-MM-DD)
+        - category: one from [Groceries, Food, Shopping, Bills, Transportation, Entertainment]
+
+        Return result as compact JSON, e.g.:
+        {"merchant":"Reliance Fresh","amount":124.50,currency":"INR","date":"2025-10-22","category":"Groceries"}
+
+      `;
+
+      const imagePart = fileToGenerativePart(req.file.path, req.file.mimetype);
+
+      // ✅ use new Gemini SDK syntax
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-flash",
+      });
+
+      const result = await model.generateContent([prompt, imagePart]);
+      const raw = result.response.text();
+
+      console.log("Gemini raw output:", raw);
+
+      // Clean and parse JSON
+      const cleanedText = raw
+        .replace(/^[\s`]*```json[\s`]*/i, "")
+        .replace(/[\s`]*```$/i, "")
+        .trim();
+
+      try {
+        extractedData = JSON.parse(cleanedText);
+
+        // Normalize amount
+        if (typeof extractedData.amount !== "number") {
+          const num = Number(
+            String(extractedData.amount ?? "").replace(/[^0-9.]/g, "")
+          );
+          if (!Number.isNaN(num)) extractedData.amount = num;
+        }
+
+        // Normalize date
+        if (extractedData.date) {
+          const d = new Date(extractedData.date);
+          if (!Number.isNaN(d.getTime())) {
+            extractedData.date = d.toISOString().slice(0, 10);
+          }
+        }
+
+        console.log("Normalized data:", extractedData);
+      } catch (err) {
+        console.warn("[Gemini] JSON parse failed:", err.message);
+        console.warn("Raw text:", cleanedText);
+      }
+    } catch (geminiError) {
+      console.warn("Gemini API error (fallback to OCR):", geminiError.message);
     }
 
+    // --- OCR FALLBACK if Gemini fails to detect ---
+    if (!extractedData.amount || Number(extractedData.amount) === 0) {
+      try {
+        const ocr = await Tesseract.recognize(req.file.path, "eng");
+        const text = ocr.data?.text || "";
+        const lines = text
+          .split(/\r?\n/)
+          .map((l) => l.trim())
+          .filter(Boolean);
+
+        const preferredPatterns = [
+          /total\s*amount/i,
+          /cash\s*received/i,
+          /amount\s*paid/i,
+        ];
+        const ignorePatterns = [
+          /subtotal/i,
+          /service/i,
+          /rounding/i,
+          /qty/i,
+          /bill\s*no/i,
+        ];
+
+        const extractNumbers = (s) =>
+          (s.match(/\d{1,3}(?:,\d{3})*(?:\.\d{1,2})?|\d+\.\d{1,2}|\d+/g) || [])
+            .map((n) => Number(n.replace(/,/g, "")))
+            .filter((n) => Number.isFinite(n) && n > 0 && n < 1_000_000);
+
+        const candidates = [];
+
+        for (let i = lines.length - 1; i >= 0; i--) {
+          const line = lines[i];
+          if (ignorePatterns.some((p) => p.test(line))) continue;
+          if (preferredPatterns.some((p) => p.test(line))) {
+            const nums = extractNumbers(line);
+            if (nums.length) {
+              candidates.push(nums[nums.length - 1]);
+              break;
+            }
+          }
+        }
+
+        if (candidates.length === 0) {
+          for (let i = lines.length - 1; i >= 0; i--) {
+            const line = lines[i];
+            if (ignorePatterns.some((p) => p.test(line))) continue;
+            if (/total/i.test(line)) {
+              const nums = extractNumbers(line);
+              if (nums.length) {
+                candidates.push(nums[nums.length - 1]);
+                break;
+              }
+            }
+          }
+        }
+
+        if (candidates.length === 0) {
+          for (
+            let i = lines.length - 1;
+            i >= Math.max(0, lines.length - 12);
+            i--
+          ) {
+            const nums = extractNumbers(lines[i]);
+            if (nums.length) {
+              candidates.push(nums[nums.length - 1]);
+              break;
+            }
+          }
+        }
+
+        if (candidates.length) {
+          const best = Math.max(...candidates);
+          if (best && Number.isFinite(best)) extractedData.amount = best;
+        }
+
+        if (!extractedData.merchant && /irctc/i.test(text)) {
+          extractedData.merchant = "IRCTC";
+        }
+        if (!extractedData.category && /(tea|food|invoice|canteen)/i.test(text)) {
+          extractedData.category = "Food";
+        }
+      } catch (ocrError) {
+        console.warn("Tesseract fallback failed:", ocrError.message);
+      }
+    }
+
+    // --- SAVE RECEIPT & CREATE TRANSACTION ---
     const newReceipt = new Receipt({
       user: req.user.id,
       fileUrl: `/uploads/${req.file.filename}`,
@@ -84,7 +193,6 @@ const uploadReceipt = async (req, res) => {
 
     const savedReceipt = await newReceipt.save();
 
-    // Automatically create a corresponding expense transaction
     if (savedReceipt) {
       const newTransaction = new IncomeExpense({
         user: req.user.id,
@@ -99,40 +207,12 @@ const uploadReceipt = async (req, res) => {
 
     res.status(201).json(savedReceipt);
   } catch (error) {
-    console.error("Error with Gemini API:", error);
-    console.error("Error details:", {
-      message: error.message,
-      code: error.code,
-      status: error.status
+    console.error("Error uploading receipt:", error);
+    res.status(500).json({
+      message: "Failed to upload receipt",
+      error: error.message,
     });
-    
-    // Clean up the uploaded file if it exists
-    if (req.file && req.file.path) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (unlinkError) {
-        console.error("Error deleting uploaded file:", unlinkError);
-      }
-    }
-    
-    res
-      .status(500)
-      .json({
-        message: "Failed to process receipt with AI",
-        error: error.message,
-      });
-  } finally {
-    // Deleting the temporary file from the server
-    if (req.file && req.file.path) {
-      try {
-        fs.unlinkSync(req.file.path);
-      } catch (unlinkError) {
-        console.error("Error deleting uploaded file in finally block:", unlinkError);
-      }
-    }
   }
 };
 
-module.exports = {
-  uploadReceipt,
-};
+module.exports = { uploadReceipt };

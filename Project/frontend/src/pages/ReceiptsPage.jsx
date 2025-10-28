@@ -359,9 +359,15 @@ const ReceiptsPage = () => {
                     </div>
                     <span className="font-bold text-gray-700 dark:text-gray-300">Amount</span>
                   </div>
-                  <p className="text-2xl font-black text-green-600 dark:text-green-400">
-                    ${receiptResult.extractedData.amount.toFixed(2)}
-                  </p>
+<p className="text-2xl font-black text-green-600 dark:text-green-400">
+  {receiptResult.extractedData.currency === "USD"
+    ? `$${receiptResult.extractedData.amount.toFixed(2)}`
+    : receiptResult.extractedData.currency === "INR"
+    ? `₹${receiptResult.extractedData.amount.toFixed(2)}`
+    : `${receiptResult.extractedData.amount.toFixed(2)} ${receiptResult.extractedData.currency || ""}`}
+</p>
+
+
                 </div>
 
                 <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-4 rounded-2xl border border-purple-200 dark:border-purple-800">

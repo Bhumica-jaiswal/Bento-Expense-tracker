@@ -1,5 +1,12 @@
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, '../uploads/');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // Set up storage engine
 const storage = multer.diskStorage({
@@ -29,7 +36,7 @@ const uploadWithErrorHandling = (req, res, next) => {
       return res.status(400).json({ message: 'File upload error: ' + err.message });
     } else if (err) {
       console.error('Upload error:', err);
-      return res.status(400).json({ message: 'File upload error: ' + err.message });
+      return res.status(400).json({ message: err.message || 'File upload failed' });
     }
     next();
   });
@@ -38,16 +45,17 @@ const uploadWithErrorHandling = (req, res, next) => {
 // Check file type
 function checkFileType(file, cb) {
   // Allowed extensions
-  const filetypes = /jpeg|jpg|png|pdf/;
+  const filetypes = /\.(jpeg|jpg|png|pdf)$/;
   // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  // Check mime type
-  const mimetype = filetypes.test(file.mimetype);
+  // Check mime type - allow common image and pdf mime types
+  const allowedMimetypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+  const mimetype = allowedMimetypes.includes(file.mimetype);
 
-  if (mimetype && extname) {
+  if (mimetype || extname) {
     return cb(null, true);
   } else {
-    cb('Error: Images or PDFs Only!');
+    cb(new Error('Only JPEG, JPG, PNG, or PDF files are allowed!'));
   }
 }
 
