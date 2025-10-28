@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const { sendMail } = require('../utils/mailer');
 
 // Function to generate JWT
 const generateToken = (id) => {
@@ -157,4 +159,90 @@ module.exports = {
   login,
   getMe,
   completeSetup,
+  // Added below
+  async forgotPassword(req, res) {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    try {
+      const user = await User.findOne({ email });
+      // Always respond with success message to avoid user enumeration
+      if (!user) {
+        return res.status(200).json({ message: 'If that email exists, a reset link has been sent' });
+      }
+
+      const token = crypto.randomBytes(32).toString('hex');
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      const expires = Date.now() + 1000 * 60 * 15; // 15 minutes
+
+      user.resetPasswordToken = tokenHash;
+      user.resetPasswordExpires = new Date(expires);
+      await user.save({ validateBeforeSave: false });
+
+      // Build reset URL for frontend
+      const appUrl = process.env.APP_URL || 'http://localhost:5173';
+      const resetUrl = `${appUrl}/reset-password/${token}`;
+
+      const emailEnabled = !!(process.env.SMTP_HOST && process.env.SMTP_PORT && process.env.SMTP_USER && process.env.SMTP_PASS);
+
+      if (emailEnabled) {
+        const subject = 'Reset your Bento password';
+        const html = `
+          <p>We received a request to reset your password.</p>
+          <p>Click the link below to set a new password. This link expires in 15 minutes.</p>
+          <p><a href="${resetUrl}">${resetUrl}</a></p>
+          <p>If you did not request this, you can safely ignore this email.</p>
+        `;
+        const text = `Reset your password: ${resetUrl} (expires in 15 minutes)`;
+        try {
+          await sendMail({ to: user.email, subject, html, text });
+        } catch (mailErr) {
+          // Do not fail the request because of mail failures
+          console.error('Email send failed:', mailErr.message);
+        }
+      }
+
+      return res.status(200).json({
+        message: emailEnabled ? 'If that email exists, a reset link has been sent' : 'Reset link generated',
+        ...(emailEnabled ? {} : { resetUrl }),
+      });
+    } catch (err) {
+      return res.status(500).json({ message: 'Server Error', error: err.message });
+    }
+  },
+
+  async resetPassword(req, res) {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ message: 'Token is required' });
+    }
+    if (!password) {
+      return res.status(400).json({ message: 'Password is required' });
+    }
+
+    try {
+      const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+      const user = await User.findOne({
+        resetPasswordToken: tokenHash,
+        resetPasswordExpires: { $gt: new Date() },
+      });
+
+      if (!user) {
+        return res.status(400).json({ message: 'Token is invalid or has expired' });
+      }
+
+      user.password = password; // Will be hashed by pre-save hook
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+
+      return res.status(200).json({ message: 'Password has been reset successfully' });
+    } catch (err) {
+      return res.status(500).json({ message: 'Server Error', error: err.message });
+    }
+  },
 };

@@ -114,6 +114,18 @@ MONGO_URI=your-mongodb-atlas-uri/bento
 JWT_SECRET=your-secret-key
 GEMINI_API_KEY=your-gemini-api-key
 KEEP_ALIVE_URL=http://localhost:5000
+# Public URL of the frontend used to build reset links
+APP_URL=http://localhost:5173
+
+# SMTP (enable real email for password reset)
+# Example for a typical SMTP provider; adjust to yours
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-smtp-username
+SMTP_PASS=your-smtp-password
+# Optional sender; defaults to SMTP_USER if omitted
+SMTP_FROM="Bento <no-reply@example.com>"
 ```
 
 Start the backend:
