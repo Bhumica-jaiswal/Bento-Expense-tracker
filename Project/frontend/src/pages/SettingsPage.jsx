@@ -7,6 +7,12 @@ const SettingsPage = () => {
   const { user, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState('');
+  const [pwdSuccess, setPwdSuccess] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
@@ -25,6 +31,31 @@ const SettingsPage = () => {
       setError('Failed to delete account. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+    setPwdError('');
+    setPwdSuccess('');
+    if (newPassword !== confirmPassword) {
+      setPwdError('New passwords do not match');
+      return;
+    }
+    try {
+      setPwdLoading(true);
+      await api.post('/auth/change-password', {
+        currentPassword,
+        newPassword,
+      });
+      setPwdSuccess('Password updated successfully');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setPwdError(err.response?.data?.message || 'Failed to update password');
+    } finally {
+      setPwdLoading(false);
     }
   };
 
@@ -119,27 +150,33 @@ const SettingsPage = () => {
           
           <div className="space-y-4">
             <div className="bg-gray-700/50 p-6 rounded-2xl border border-lime-400/20">
-              <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-white mb-2">Change Password</h3>
+              <p className="text-gray-400 mb-4">Update your account password</p>
+              {pwdSuccess && (
+                <div className="mb-4 p-3 rounded bg-green-900/30 border border-green-400/50 text-green-300 text-sm">{pwdSuccess}</div>
+              )}
+              {pwdError && (
+                <div className="mb-4 p-3 rounded bg-red-900/30 border border-red-400/50 text-red-300 text-sm">{pwdError}</div>
+              )}
+              <form onSubmit={handleChangePassword} className="space-y-4">
                 <div>
-                  <h3 className="text-lg font-bold text-white mb-2">Password Security</h3>
-                  <p className="text-gray-400">Manage your account password</p>
+                  <label className="block text-sm font-medium text-gray-300 mb-1" htmlFor="currentPassword">Current Password</label>
+                  <input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-lime-400" />
                 </div>
-                <button className="px-4 py-2 bg-lime-400 text-gray-900 rounded-xl font-bold hover:bg-lime-300 transition-all duration-300 transform hover:scale-105">
-                  Change Password
-                </button>
-              </div>
-            </div>
-            
-            <div className="bg-gray-700/50 p-6 rounded-2xl border border-lime-400/20">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-white mb-2">Two-Factor Authentication</h3>
-                  <p className="text-gray-400">Add an extra layer of security</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1" htmlFor="newPassword">New Password</label>
+                    <input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-lime-400" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1" htmlFor="confirmPassword">Confirm New Password</label>
+                    <input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-lime-400" />
+                  </div>
                 </div>
-                <button className="px-4 py-2 bg-gray-600/50 text-white rounded-xl font-bold hover:bg-gray-600/70 transition-all duration-300 transform hover:scale-105 border border-gray-500/30">
-                  Enable 2FA
+                <button type="submit" disabled={pwdLoading} className="px-4 py-2 bg-lime-400 text-gray-900 rounded-xl font-bold hover:bg-lime-300 transition-all duration-300 transform hover:scale-105 disabled:opacity-50">
+                  {pwdLoading ? 'Updating...' : 'Update Password'}
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>
