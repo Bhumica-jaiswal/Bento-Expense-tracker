@@ -263,12 +263,12 @@ const TransactionsPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 relative overflow-hidden transition-colors">
       {/* Dark Grid Background */}
-      <div className="absolute inset-0 bg-gray-900" style={{
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" style={{
         backgroundImage: `
-          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+          linear-gradient(rgba(34, 197, 94, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.06) 1px, transparent 1px)
         `,
         backgroundSize: '20px 20px'
       }}></div>
@@ -300,10 +300,10 @@ const TransactionsPage = () => {
       <div className="relative z-10 p-8 mb-8 mx-4">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-4">
-            <h1 className="text-6xl font-black text-white mb-4">
+            <h1 className="text-6xl font-black text-gray-900 dark:text-white mb-4">
               💳 Transaction Manager
             </h1>
-            <p className="text-white/80 text-xl font-medium max-w-2xl">
+            <p className="text-gray-700 dark:text-white/80 text-xl font-medium max-w-2xl">
               Track, manage, and analyze your financial transactions with precision and style ✨
             </p>
           </div>
@@ -348,12 +348,12 @@ const TransactionsPage = () => {
       </div>
       {/* Enhanced Search and Filters */}
       <div className="relative z-10 mb-8 mx-4">
-        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
               <Filter className="text-2xl text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white">Search & Filter</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white">Search & Filter</h2>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -365,7 +365,7 @@ const TransactionsPage = () => {
                   placeholder="Search transactions..."
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="w-full pl-12 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300 placeholder-gray-400"
+                  className="w-full pl-12 pr-4 py-3 text-sm border border-gray-300 dark:border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 placeholder-gray-400"
                 />
               </div>
             </div>
@@ -375,7 +375,7 @@ const TransactionsPage = () => {
                 <select
                   value={typeFilter}
                   onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-                  className="w-full pl-12 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300 appearance-none"
+                  className="w-full pl-12 pr-4 py-3 text-sm border border-gray-300 dark:border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 appearance-none"
                 >
                   <option value="all">All Types</option>
                   <option value="income">Income</option>
@@ -389,7 +389,7 @@ const TransactionsPage = () => {
                 <select
                   value={categoryFilter}
                   onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-                  className="w-full pl-12 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300 appearance-none"
+                  className="w-full pl-12 pr-4 py-3 text-sm border border-gray-300 dark:border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300 appearance-none"
                 >
                   <option value="all">All Categories</option>
                   {allCategories.map((cat) => (
@@ -407,7 +407,7 @@ const TransactionsPage = () => {
                   type="date"
                   value={dateFrom}
                   onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-                  className="w-full pl-20 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300"
+                  className="w-full pl-20 pr-4 py-3 text-sm border border-gray-300 dark:border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300"
                 />
             </div>
             <div className="lg:col-span-2 relative">
@@ -417,7 +417,7 @@ const TransactionsPage = () => {
                 type="date"
                 value={dateTo}
                 onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-                className="w-full pl-16 pr-4 py-3 text-sm border border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-gray-700/50 text-white transition-all duration-300"
+                className="w-full pl-16 pr-4 py-3 text-sm border border-gray-300 dark:border-lime-400/30 rounded-2xl focus:ring-2 focus:ring-lime-400 focus:border-lime-400 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all duration-300"
               />
             </div>
           </div>

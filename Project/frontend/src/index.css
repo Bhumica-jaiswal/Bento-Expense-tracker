@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 transition-colors duration-300;
+  }
+  .dark body {
+    @apply bg-gray-900 text-gray-100 transition-colors duration-300;
+  }
+}
+
 /* Custom animations for dashboard */
 @keyframes fade-in-up {
   from {
@@ -58,4 +67,13 @@
 
 .animate-float-slow {
   animation: float-slow 10s ease-in-out infinite;
+}
+
+/* Hide scrollbars for elements that use horizontal overflow (like the navbar links) */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }

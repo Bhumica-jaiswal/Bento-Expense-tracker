@@ -24,7 +24,7 @@ const Layout = () => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <nav className="bg-white dark:bg-gray-800 shadow-lg border-b border-teal-200 dark:border-teal-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -44,7 +44,7 @@ const Layout = () => {
               </div>
 
               <div className="hidden md:block">
-                <div className="ml-10 flex items-baseline space-x-4">
+                <div className="ml-8 flex items-center space-x-3 md:space-x-5 overflow-x-auto overflow-y-hidden whitespace-nowrap no-scrollbar">
                   <NavLink to="/dashboard" className={getNavLinkClass}>
                     Dashboard
                   </NavLink>
@@ -53,6 +53,9 @@ const Layout = () => {
                   </NavLink>
                   <NavLink to="/receipts" className={getNavLinkClass}>
                     Receipts
+                  </NavLink>
+                  <NavLink to="/insights" className={getNavLinkClass}>
+                    Insights
                   </NavLink>
                   <NavLink to="/settings" className={getNavLinkClass}>
                     Settings
@@ -69,7 +72,7 @@ const Layout = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <NotificationBell />
               <ThemeToggle />
               <CurrencySelector />

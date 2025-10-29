@@ -372,7 +372,7 @@ const exportTransactions = async (req, res) => {
     const csv = Papa.unparse(csvData, { header: true });
 
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', 'attachment; filename="paisable_transactions.csv"');
+    res.setHeader('Content-Disposition', 'attachment; filename="Bento_transactions.csv"');
     res.status(200).send(csv);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error: error.message });

@@ -71,12 +71,12 @@ const Budgets = () => {
   // No need for manual calculation - backend now provides spent amounts
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 relative overflow-hidden transition-colors">
       {/* Dark Grid Background */}
-      <div className="absolute inset-0 bg-gray-900" style={{
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" style={{
         backgroundImage: `
-          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+          linear-gradient(rgba(34, 197, 94, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.06) 1px, transparent 1px)
         `,
         backgroundSize: '20px 20px'
       }}></div>
@@ -108,10 +108,10 @@ const Budgets = () => {
       <div className="relative z-10 p-8 mb-8 mx-4">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-4">
-            <h1 className="text-6xl font-black text-white mb-4">
+            <h1 className="text-6xl font-black text-gray-900 dark:text-white mb-4">
               Budget Management
             </h1>
-            <p className="text-white/80 text-xl font-medium max-w-2xl">
+            <p className="text-gray-700 dark:text-white/80 text-xl font-medium max-w-2xl">
               Track your spending against your budgets and stay on top of your financial goals.
             </p>
           </div>
@@ -133,14 +133,14 @@ const Budgets = () => {
             <Spinner />
           </div>
         ) : budgets.length > 0 ? (
-          <div className="relative group bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up">
+          <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up">
             <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
             <div className="relative z-10">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
                   <FiDollarSign className="text-2xl text-gray-900" />
                 </div>
-                <h2 className="text-2xl font-black text-white">Your Budgets</h2>
+                <h2 className="text-2xl font-black text-gray-900 dark:text-white">Your Budgets</h2>
               </div>
               
               <div className="overflow-x-auto">
@@ -187,10 +187,10 @@ const Budgets = () => {
 
                       return (
                         <tr key={b._id} className="hover:bg-lime-400/5 transition-all duration-300">
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
                             {b.category}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">{`${b.month}/${b.year}`}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">{`${b.month}/${b.year}`}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-lime-400 font-bold">
                             {new Intl.NumberFormat('en-US', {
                               style: 'currency',
@@ -215,7 +215,7 @@ const Budgets = () => {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap w-1/3">
                             <div className="flex items-center">
-                              <div className="w-full bg-gray-700 rounded-full h-2 mr-3">
+                              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mr-3">
                                 <div 
                                   className={`h-2 rounded-full transition-all duration-300 ${
                                     b.alertStatus === 'exceeded' ? 'bg-red-500' :
@@ -249,7 +249,7 @@ const Budgets = () => {
             </div>
           </div>
         ) : (
-          <div className="relative group bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up">
+          <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up">
             <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
             <div className="relative z-10">
               <EmptyState message="No budgets found" />

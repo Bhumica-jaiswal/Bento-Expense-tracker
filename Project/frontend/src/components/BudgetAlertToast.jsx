@@ -6,19 +6,42 @@ const BudgetAlertToast = () => {
   const [toasts, setToasts] = useState([]);
   const [previousAlerts, setPreviousAlerts] = useState([]);
 
+  const STORAGE_KEY = 'bento_budget_seen_alerts_v1';
+
+  const loadSeen = () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : {};
+    } catch (_) {
+      return {};
+    }
+  };
+
+  const saveSeen = (seen) => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(seen));
+    } catch (_) {}
+  };
+
+  const makeAlertKey = (alert) => `${alert.category}|${alert.type}|${alert.period || ''}`;
+
   const fetchAlerts = async () => {
     try {
       const response = await api.get('/budgets/alerts');
       const currentAlerts = response.data.alerts || [];
       
-      // Check for new alerts
-      const newAlerts = currentAlerts.filter(alert => 
-        !previousAlerts.some(prevAlert => 
+      // Check for new alerts and whether the user has already seen/dismissed them this session
+      const seen = loadSeen();
+      const newAlerts = currentAlerts.filter(alert => {
+        const key = makeAlertKey(alert);
+        const notPrev = !previousAlerts.some(prevAlert => 
           prevAlert.category === alert.category && 
           prevAlert.type === alert.type &&
           prevAlert.spent === alert.spent
-        )
-      );
+        );
+        const notSeen = !seen[key];
+        return notPrev && notSeen;
+      });
 
       // Add new alerts as toasts
       newAlerts.forEach(alert => {
@@ -40,6 +63,11 @@ const BudgetAlertToast = () => {
     };
 
     setToasts(prev => [...prev, newToast]);
+
+    // Mark as seen so it won't pop up repeatedly
+    const seen = loadSeen();
+    seen[makeAlertKey(alert)] = true;
+    saveSeen(seen);
 
     // Auto remove after 8 seconds
     setTimeout(() => {
@@ -114,6 +142,7 @@ const BudgetAlertToast = () => {
 };
 
 export default BudgetAlertToast;
+
 
 
 

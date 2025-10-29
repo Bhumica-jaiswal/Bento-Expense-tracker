@@ -13,7 +13,7 @@ export const handleExportCSV = async () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'paisable_transactions.csv';
+    a.download = 'Bento_transactions.csv';
     document.body.appendChild(a);
     a.click();
     a.remove();

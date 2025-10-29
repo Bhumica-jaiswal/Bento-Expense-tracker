@@ -135,12 +135,12 @@ const RecurringTransactions = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 relative overflow-hidden transition-colors">
       {/* Dark Grid Background */}
-      <div className="absolute inset-0 bg-gray-900" style={{
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" style={{
         backgroundImage: `
-          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+          linear-gradient(rgba(34, 197, 94, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.06) 1px, transparent 1px)
         `,
         backgroundSize: '20px 20px'
       }}></div>
@@ -172,10 +172,10 @@ const RecurringTransactions = () => {
       <div className="relative z-10 p-8 mb-8 mx-4">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-4">
-            <h1 className="text-6xl font-black text-white mb-4">
+            <h1 className="text-6xl font-black text-gray-900 dark:text-white mb-4">
               Recurring Transactions
             </h1>
-            <p className="text-white/80 text-xl font-medium max-w-2xl">
+            <p className="text-gray-700 dark:text-white/80 text-xl font-medium max-w-2xl">
               Automate your finances with recurring transactions and never miss a payment again.
             </p>
           </div>
@@ -217,23 +217,23 @@ const RecurringTransactions = () => {
           <>
             {/* Upcoming Payments Section */}
             {showUpcoming && upcomingPayments.length > 0 && (
-              <div className="relative group bg-blue-800/50 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border border-blue-400/20 hover:border-blue-400/40 transition-all duration-500 animate-fade-in-up mb-8">
+              <div className="relative group bg-blue-50 dark:bg-blue-800/50 backdrop-blur-sm p-6 rounded-3xl shadow-2xl border border-blue-200 dark:border-blue-400/20 hover:border-blue-400/40 transition-all duration-500 animate-fade-in-up mb-8">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-blue-400/10 rounded-full blur-3xl"></div>
                 <div className="relative z-10">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl flex items-center justify-center">
                       <FiClock className="text-2xl text-white" />
                     </div>
-                    <h2 className="text-2xl font-black text-white">Upcoming Payments (Next 7 Days)</h2>
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">Upcoming Payments (Next 7 Days)</h2>
                   </div>
                   
                   <div className="grid gap-4">
                     {upcomingPayments.map((payment) => (
-                      <div key={payment._id} className="bg-blue-700/30 rounded-xl p-4 border border-blue-400/20">
+                      <div key={payment._id} className="bg-blue-100 dark:bg-blue-700/30 rounded-xl p-4 border border-blue-200 dark:border-blue-400/20">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="text-white font-bold">{payment.name}</h3>
-                            <p className="text-blue-200 text-sm">{payment.category}</p>
+                            <h3 className="text-gray-900 dark:text-white font-bold">{payment.name}</h3>
+                            <p className="text-blue-700 dark:text-blue-200 text-sm">{payment.category}</p>
                           </div>
                           <div className="text-right">
                             <p className={`font-bold ${payment.isIncome ? 'text-green-400' : 'text-red-400'}`}>
@@ -256,14 +256,14 @@ const RecurringTransactions = () => {
             )}
 
             {/* Main Recurring Transactions Table */}
-            <div className="relative group bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up">
+            <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up">
               <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
               <div className="relative z-10">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
                     <FiRefreshCw className="text-2xl text-gray-900" />
                   </div>
-                  <h2 className="text-2xl font-black text-white">Your Recurring Transactions</h2>
+                  <h2 className="text-2xl font-black text-gray-900 dark:text-white">Your Recurring Transactions</h2>
                 </div>
                 
                 {recurring.length > 0 ? (
@@ -303,8 +303,8 @@ const RecurringTransactions = () => {
                     <tbody className="divide-y divide-lime-400/10">
                       {recurring.map((r) => (
                         <tr key={r._id} className="hover:bg-lime-400/5 transition-all duration-300">
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">{r.name}</td>
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">{r.name}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
                             {r.category}
                           </td>
                           <td
@@ -318,13 +318,13 @@ const RecurringTransactions = () => {
                               currency: currencyCode,
                             }).format(r.amount)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
                             {r.isIncome ? 'Income' : 'Expense'}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-lime-400 font-semibold">
+                          <td className="px-6 py-4 whitespace-nowrap text-lime-600 dark:text-lime-400 font-semibold">
                             {r.frequency}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
                             {new Date(r.nextDueDate).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -336,7 +336,7 @@ const RecurringTransactions = () => {
                               {r.isActive ? 'Active' : 'Paused'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-white font-semibold">
+                          <td className="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
                             {r.generatedCount || 0}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

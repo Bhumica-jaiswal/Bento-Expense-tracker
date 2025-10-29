@@ -17,6 +17,7 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import SetupProtectedRoute from './components/SetupProtectedRoute';
 import RecurringTransactions from './pages/RecurringTransactions';
+import AIInsightsPage from './pages/AIInsightsPage';
 import BudgetAlertToast from './components/BudgetAlertToast';
 import UpcomingPaymentsNotification from './components/UpcomingPaymentsNotification';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -24,6 +25,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 function App() {
   return (
     <ErrorBoundary>
+      <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<WelcomePage />} />
@@ -52,6 +54,7 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/receipts" element={<ReceiptsPage />} />
+          <Route path="/insights" element={<AIInsightsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/budgets" element={<Budgets />} />
           <Route
@@ -63,6 +66,7 @@ function App() {
       <ToastContainer />
       <BudgetAlertToast />
       <UpcomingPaymentsNotification />
+      </div>
     </ErrorBoundary>
   );
 }

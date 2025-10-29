@@ -142,12 +142,12 @@ const ReceiptsPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 relative overflow-hidden transition-colors">
       {/* Dark Grid Background */}
-      <div className="absolute inset-0 bg-gray-900" style={{
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" style={{
         backgroundImage: `
-          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+          linear-gradient(rgba(34, 197, 94, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.06) 1px, transparent 1px)
         `,
         backgroundSize: '20px 20px'
       }}></div>
@@ -178,10 +178,10 @@ const ReceiptsPage = () => {
       {/* Header Section */}
       <div className="relative z-10 p-8 mb-8 mx-4">
         <div className="text-center">
-          <h1 className="text-6xl font-black text-white mb-4">
+          <h1 className="text-6xl font-black text-gray-900 dark:text-white mb-4">
             📸 Smart Receipt Scanner
           </h1>
-          <p className="text-white/80 text-xl font-medium max-w-3xl mx-auto">
+          <p className="text-gray-700 dark:text-white/80 text-xl font-medium max-w-3xl mx-auto">
             Upload your receipt and let AI extract the transaction details automatically with precision and style ✨
           </p>
         </div>
@@ -189,12 +189,12 @@ const ReceiptsPage = () => {
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 mx-4">
         {/* Upload Section */}
-        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
               <Upload className="text-2xl text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white">Upload Receipt</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white">Upload Receipt</h2>
           </div>
 
           {/* Drag & Drop Area */}
@@ -320,12 +320,12 @@ const ReceiptsPage = () => {
         </div>
 
         {/* Results Section */}
-        <div className="bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+        <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
               <CheckCircle className="text-2xl text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white">Extracted Data</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white">Extracted Data</h2>
           </div>
 
           {receiptResult ? (

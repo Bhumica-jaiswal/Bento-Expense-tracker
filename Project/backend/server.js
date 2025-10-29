@@ -41,7 +41,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
-  "https://paisable.netlify.app",
+  "https://bento.netlify.app",
 ];
 
 // ✅ Middleware
@@ -73,6 +73,7 @@ app.use('/api/receipts', require('./routes/receiptRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/budgets', require('./routes/budgetRoutes'));
 app.use('/api/recurring', require('./routes/recurringTransactionRoutes'));
+app.use('/api/insights', require('./routes/insightsRoutes'));
 
 // ✅ Static uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

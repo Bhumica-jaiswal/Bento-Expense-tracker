@@ -559,7 +559,7 @@ const faqs = [
                   <p className="text-blue-100">
                     Still have questions?{" "}
                     <a
-                      href="mailto:support@paisable.com"
+                      href="mailto:support@bento.com"
                       className="font-medium text-white hover:text-blue-200 transition-colors"
                     >
                       Email our support team

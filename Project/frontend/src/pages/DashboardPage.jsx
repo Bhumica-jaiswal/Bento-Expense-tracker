@@ -20,9 +20,10 @@ const SummaryCard = ({ title, value, bgColor, textColor, icon, loading, emoji })
     style: 'currency',
     currency: currency.code,
   }).format(value);
+  const cardBg = bgColor || 'bg-white dark:bg-gray-800/50';
 
   return (
-    <div className="relative group overflow-hidden rounded-3xl bg-gray-800/50 backdrop-blur-sm border border-lime-400/20 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 hover:border-lime-400/40">
+    <div className={`relative group overflow-hidden rounded-3xl ${cardBg} backdrop-blur-sm border border-lime-400/20 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 hover:border-lime-400/40`}>
       {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-lime-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
       
@@ -34,7 +35,7 @@ const SummaryCard = ({ title, value, bgColor, textColor, icon, loading, emoji })
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <span className="text-3xl">{emoji}</span>
-            <h3 className="text-xl font-black text-white">{title}</h3>
+            <h3 className="text-xl font-black text-gray-900 dark:text-white">{title}</h3>
           </div>
           <div className="text-4xl text-lime-400/80 group-hover:scale-110 transition-transform duration-300">
             {icon}
@@ -135,12 +136,12 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-gray-900 relative overflow-hidden transition-colors">
       {/* Dark Grid Background */}
-      <div className="absolute inset-0 bg-gray-900" style={{
+      <div className="absolute inset-0 bg-gray-50 dark:bg-gray-900" style={{
         backgroundImage: `
-          linear-gradient(rgba(34, 197, 94, 0.1) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(34, 197, 94, 0.1) 1px, transparent 1px)
+          linear-gradient(rgba(34, 197, 94, 0.06) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(34, 197, 94, 0.06) 1px, transparent 1px)
         `,
         backgroundSize: '20px 20px'
       }}></div>
@@ -172,10 +173,10 @@ const DashboardPage = () => {
       <div className="relative z-10 p-8 mb-8 mx-4">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-4">
-            <h1 className="text-6xl font-black text-white mb-4">
+            <h1 className="text-6xl font-black text-gray-900 dark:text-white mb-4">
               Master your Finances with Fintrack
             </h1>
-            <p className="text-white/80 text-xl font-medium max-w-2xl">
+            <p className="text-gray-700 dark:text-white/80 text-xl font-medium max-w-2xl">
               Track your spending, manage your budget, and achieve your financial goals with ease.
             </p>
           </div>
@@ -196,7 +197,7 @@ const DashboardPage = () => {
           <SummaryCard 
             title="Total Income" 
             value={summaryData.totalIncome} 
-            bgColor="bg-gray-800/50" 
+            bgColor="bg-white dark:bg-gray-800/50" 
             textColor="text-lime-400"
             icon={<IoTrendingUp />}
             emoji="💰"
@@ -207,7 +208,7 @@ const DashboardPage = () => {
           <SummaryCard 
             title="Total Expense" 
             value={summaryData.totalExpenses} 
-            bgColor="bg-gray-800/50" 
+            bgColor="bg-white dark:bg-gray-800/50" 
             textColor="text-lime-400"
             icon={<IoTrendingDown />}
             emoji="💸"
@@ -218,7 +219,7 @@ const DashboardPage = () => {
           <SummaryCard 
             title="Current Balance" 
             value={summaryData.balance} 
-            bgColor="bg-gray-800/50" 
+            bgColor="bg-white dark:bg-gray-800/50" 
             textColor="text-lime-400"
             icon={<IoWallet />}
             emoji="🏦"
@@ -230,14 +231,14 @@ const DashboardPage = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 px-4">
         {/* Expenses by Category */}
-        <div className="relative group bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+        <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
                 <span className="text-2xl">📊</span>
               </div>
-              <h2 className="text-2xl font-black text-white">Expenses by Category</h2>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white">Expenses by Category</h2>
             </div>
             {loading ? <Spinner /> : chartData?.expensesByCategory.length > 0 ? (
               <CategoryPieChart data={chartData.expensesByCategory} theme={theme} />
@@ -248,14 +249,14 @@ const DashboardPage = () => {
         </div>
 
         {/* Recent Activity & Transactions */}
-        <div className="relative group bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+        <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
                 <span className="text-2xl">📈</span>
               </div>
-              <h2 className="text-2xl font-black text-white">Recent Activity</h2>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white">Recent Activity</h2>
             </div>
             <div className="relative h-80">
               {loading ? <Spinner /> : (chartData?.expensesOverTime.length > 0 || chartData?.incomeOverTime.length > 0) ? (
@@ -272,7 +273,7 @@ const DashboardPage = () => {
             <div className="mt-8">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-xl">💳</span>
-                <h3 className="text-xl font-black text-white">Recent Transactions</h3>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white">Recent Transactions</h3>
               </div>
               {loading ? <p className="text-gray-400 mt-2">Loading transactions...</p> : recentTransactions.length > 0 ? (
                 <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-lime-400/20 scrollbar-track-transparent">
@@ -281,8 +282,8 @@ const DashboardPage = () => {
                       <div className="flex items-center gap-3">
                         <div className={`w-3 h-3 rounded-full ${tx.isIncome ? 'bg-lime-400' : 'bg-red-400'} animate-pulse`}></div>
                         <div>
-                          <p className="font-bold text-white">{tx.name}</p>
-                          <p className="text-sm text-gray-400">{new Date(tx.addedOn).toLocaleDateString()}</p>
+                          <p className="font-bold text-gray-900 dark:text-white">{tx.name}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{new Date(tx.addedOn).toLocaleDateString()}</p>
                         </div>
                       </div>
                       <p className={`font-black text-lg ${tx.isIncome ? 'text-lime-400' : 'text-red-400'}`}>
@@ -299,14 +300,14 @@ const DashboardPage = () => {
 
       {/* Time Series Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 pb-8">
-        <div className="relative bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+        <div className="relative bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
                 <span className="text-2xl">📈</span>
               </div>
-              <h2 className="text-2xl font-black text-white">Income Over Time</h2>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white">Income Over Time</h2>
             </div>
             {loading ? <Spinner /> : chartData?.incomeOverTime.length > 0 ? (
               <LineChart label={"Income"} data={chartData.incomeOverTime} theme={theme} />
@@ -316,14 +317,14 @@ const DashboardPage = () => {
           </div>
         </div>
         
-        <div className="relative bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.7s'}}>
+        <div className="relative bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.7s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 bg-gradient-to-br from-lime-400 to-lime-500 rounded-2xl flex items-center justify-center">
                 <span className="text-2xl">📉</span>
               </div>
-              <h2 className="text-2xl font-black text-white">Expenses Over Time</h2>
+              <h2 className="text-2xl font-black text-gray-900 dark:text-white">Expenses Over Time</h2>
             </div>
             {loading ? <Spinner /> : chartData?.expensesOverTime.length > 0 ? (
               <LineChart label={"Expenses"} data={chartData.expensesOverTime} theme={theme} />
