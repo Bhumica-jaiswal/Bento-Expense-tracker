@@ -2,6 +2,6 @@
 export function updateFavicon(theme) {
   const favicon = document.getElementById('favicon');
   if (favicon) {
-    favicon.href = theme === 'dark' ? '/favicon-dark.svg' : '/favicon-light.svg';
+    favicon.href = theme === 'dark' ? '/favicon-dark.png' : '/favicon-light.png';
   }
 }

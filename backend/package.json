@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This is the backend for Bento - Personal Finance Management App",
   "license": "ISC",
-  "author": "Archa",
+  "author": "Bhumica",
   "type": "commonjs",
   "main": "server.js",
   "scripts": {
