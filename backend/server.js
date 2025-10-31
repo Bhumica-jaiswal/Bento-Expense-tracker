@@ -42,7 +42,8 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://localhost:5175",
   "https://bento-tracks.netlify.app",
-  "https://deploy-preview-1--bento-tracks.netlify.app/"
+   "https://deploy-preview-1--bento-tracks.netlify.app/"
+ 
 ];
 
 // ✅ Middleware
