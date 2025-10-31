@@ -170,29 +170,29 @@ const DashboardPage = () => {
       </div>
 
       {/* Header Section */}
-      <div className="relative z-10 p-8 mb-8 mx-4">
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="space-y-4">
-            <h1 className="text-6xl font-black text-gray-900 dark:text-white mb-4">
+      <div className="relative z-10 p-4 md:p-8 mb-6 md:mb-8 mx-2 md:mx-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 md:gap-6">
+          <div className="space-y-2 md:space-y-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-2 md:mb-4 leading-tight">
               Master your Finances with Fintrack
             </h1>
-            <p className="text-gray-700 dark:text-white/80 text-xl font-medium max-w-2xl">
+            <p className="text-gray-700 dark:text-white/80 text-base sm:text-lg md:text-xl font-medium max-w-2xl">
               Track your spending, manage your budget, and achieve your financial goals with ease.
             </p>
           </div>
           <button
             onClick={handleOpenModal}
-            className="group relative px-8 py-4 font-black bg-lime-400 text-gray-900 rounded-2xl shadow-2xl hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-lime-300 focus:ring-opacity-50 transform hover:scale-110 transition-all duration-300 flex items-center gap-3 overflow-hidden"
+            className="group relative px-6 py-3 md:px-8 md:py-4 font-black bg-lime-400 text-gray-900 rounded-2xl shadow-2xl hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-lime-300 focus:ring-opacity-50 transform hover:scale-110 transition-all duration-300 flex items-center gap-2 md:gap-3 overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-lime-300/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <FiPlus className="text-2xl relative z-10" />
-            <span className="relative z-10 text-lg">Start now</span>
+            <FiPlus className="text-xl md:text-2xl relative z-10" />
+            <span className="relative z-10 text-sm md:text-lg">Start now</span>
           </button>
         </div>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 px-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-4">
         <div className="animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <SummaryCard 
             title="Total Income" 
@@ -229,9 +229,9 @@ const DashboardPage = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 mb-8 md:mb-12 px-2 md:px-4">
         {/* Expenses by Category */}
-        <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+        <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
@@ -249,7 +249,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Recent Activity & Transactions */}
-        <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+        <div className="relative group bg-white dark:bg-gray-800/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
@@ -258,7 +258,7 @@ const DashboardPage = () => {
               </div>
               <h2 className="text-2xl font-black text-gray-900 dark:text-white">Recent Activity</h2>
             </div>
-            <div className="relative h-80">
+            <div className="relative h-64 sm:h-72 md:h-80">
               {loading ? <Spinner /> : (chartData?.expensesOverTime.length > 0 || chartData?.incomeOverTime.length > 0) ? (
                 <ActivityBarChart
                   expensesData={chartData.expensesOverTime}
@@ -299,8 +299,8 @@ const DashboardPage = () => {
       </div>
 
       {/* Time Series Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 pb-8">
-        <div className="relative bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 px-2 md:px-4 pb-6 md:pb-8">
+        <div className="relative bg-white dark:bg-gray-800/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">
@@ -317,7 +317,7 @@ const DashboardPage = () => {
           </div>
         </div>
         
-        <div className="relative bg-white dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.7s'}}>
+        <div className="relative bg-white dark:bg-gray-800/50 backdrop-blur-sm p-4 md:p-8 rounded-3xl shadow-2xl border border-lime-400/10 dark:border-lime-400/20 hover:border-lime-400/40 transition-all duration-500 animate-fade-in-up" style={{animationDelay: '0.7s'}}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-lime-400/10 rounded-full blur-3xl"></div>
           <div className="relative z-10">
             <div className="flex items-center gap-4 mb-6">

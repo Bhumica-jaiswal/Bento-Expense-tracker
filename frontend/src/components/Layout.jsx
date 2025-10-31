@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
 import CurrencySelector from './CurrencySelector';
@@ -10,6 +10,7 @@ const Layout = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const getNavLinkClass = ({ isActive }) => {
     const baseClasses = 'px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 transform hover:scale-105';
@@ -80,6 +81,15 @@ const Layout = () => {
               <NotificationBell />
               <ThemeToggle />
               <CurrencySelector />
+              {/* Mobile menu toggle */}
+              <button
+                className="md:hidden px-3 py-2 rounded-lg text-sm font-semibold bg-teal-600 text-white"
+                onClick={() => setMobileMenuOpen((v) => !v)}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu"
+              >
+                {mobileMenuOpen ? 'Close' : 'Menu'}
+              </button>
               <button
                 onClick={logout}
                 className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-red-500/25"
@@ -90,6 +100,20 @@ const Layout = () => {
           </div>
         </div>
       </nav>
+      {/* Mobile nav (collapsible) */}
+      {mobileMenuOpen && (
+        <div id="mobile-menu" className="md:hidden bg-white dark:bg-gray-800 border-b border-teal-200 dark:border-teal-800">
+          <div className="max-w-7xl mx-auto px-3 py-3 grid grid-cols-1 gap-2">
+            <NavLink to="/dashboard" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Dashboard</NavLink>
+            <NavLink to="/transactions" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Transactions</NavLink>
+            <NavLink to="/receipts" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Receipts</NavLink>
+            <NavLink to="/insights" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Insights</NavLink>
+            <NavLink to="/settings" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Settings</NavLink>
+            <NavLink to="/budgets" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Budgets</NavLink>
+            <NavLink to="/recurring-transactions" onClick={() => setMobileMenuOpen(false)} className={({ isActive }) => `px-3 py-2 rounded-lg text-sm font-semibold ${isActive ? 'bg-gradient-to-r from-teal-500 to-cyan-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-900/20'}`}>Recurring Transactions</NavLink>
+          </div>
+        </div>
+      )}
       <main>
         <div className="w-full">
           <Outlet />
