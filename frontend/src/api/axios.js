@@ -1,10 +1,16 @@
 import axios from 'axios';
+// Automatically decide base URL
+const baseURL =
+  import.meta.env.MODE === 'development'
+    ? '/api' // local frontend → Vite proxy
+    : import.meta.env.VITE_API_URL; // deployed frontend → actual backend URL
 
-const instance = axios.create({
-baseURL: import.meta.env.VITE_API_URL,
-});
+// Optional: log to confirm what it's using
+console.log('Axios baseURL →', baseURL);
 
-// Interceptor to add the auth token to every request
+const instance = axios.create({ baseURL });
+
+// Add auth token to every request
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -17,3 +23,7 @@ instance.interceptors.request.use(
 );
 
 export default instance;
+
+
+
+
