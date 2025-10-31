@@ -1,26 +1,16 @@
-
 import axios from 'axios';
+// Automatically decide base URL
+const baseURL =
+  import.meta.env.MODE === 'development'
+    ? '/api' // local frontend → Vite proxy
+    : import.meta.env.VITE_API_URL; // deployed frontend → actual backend URL
 
-// Derive a safe default when env is missing
-const derivedBaseUrl = (() => {
-  const envUrl = import.meta?.env?.VITE_API_URL;
-  if (envUrl && typeof envUrl === 'string') return envUrl;
+// Optional: log to confirm what it's using
+console.log('Axios baseURL →', baseURL);
 
-  const host = typeof window !== 'undefined' ? window.location.hostname : '';
-  if (host === 'localhost' || host === '127.0.0.1') {
-    return 'http://localhost:5000/api';
-  }
-  // Fallback for production if env not set
-  return 'https://bento-pao9.onrender.com/api';
-})();
+const instance = axios.create({ baseURL });
 
-const instance = axios.create({
-  baseURL: derivedBaseUrl,
-});
-// console.log("🌍 API Base URL =>", derivedBaseUrl);
-
-
-// Interceptor to add the auth token to every request
+// Add auth token to every request
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -33,3 +23,7 @@ instance.interceptors.request.use(
 );
 
 export default instance;
+
+
+
+
